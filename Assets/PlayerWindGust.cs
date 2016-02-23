@@ -46,7 +46,6 @@ public class PlayerWindGust : MonoBehaviour {
         if (otherSlider && puck)
         {
             otherSlider.HitByStormWithSphericalVelocity(0.5f*slider.sphericalVelocity);
-           // otherSlider.HitByStormAtPosition(transform.position);
             GameObject.Destroy(gameObject);
         }
     }

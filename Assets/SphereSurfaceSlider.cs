@@ -38,7 +38,6 @@ public class SphereSurfaceSlider : MonoBehaviour {
     public void HitByStormWithSphericalVelocity(Vector3 stormSphericalVelocity)
     {
         HitWithLinearForce(Vector3.Cross(transform.position.normalized, stormSphericalVelocity.normalized));
-        //sphericalVelocity = sphericalVelocity.magnitude * stormSphericalVelocity.normalized;
         StartCoroutine(FreezeScreen(0.05f));
     }
 
