@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Puck : MonoBehaviour {
 
+    public float rainRadius = 4.0f;
+
     private SphereSurfaceSlider slider;
 
 	// Use this for initialization
@@ -12,7 +14,14 @@ public class Puck : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+        foreach(RaycastHit hitInfo in Physics.SphereCastAll(transform.position, rainRadius, -1 * transform.position, 4))
+        {
+            Ground ground = hitInfo.collider.GetComponent<Ground>();
+            if(ground)
+            {
+                ground.RainedOnAtPoint(hitInfo.point);
+            }
+        }
 	}
 
     void OnTriggerEnter(Collider collider)
