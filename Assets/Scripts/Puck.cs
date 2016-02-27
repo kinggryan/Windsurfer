@@ -14,7 +14,7 @@ public class Puck : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        foreach(RaycastHit hitInfo in Physics.SphereCastAll(transform.position, rainRadius, -1 * transform.position, 4))
+        foreach(RaycastHit hitInfo in Physics.SphereCastAll(transform.position, rainRadius, -1 * transform.position, 0.5f*transform.position.magnitude))
         {
             Ground ground = hitInfo.collider.GetComponent<Ground>();
             if(ground)
@@ -39,8 +39,10 @@ public class Puck : MonoBehaviour {
 
         if (collider.GetComponent<Goal>() == null && collider.transform != transform)
         {
+            float mag = slider.sphericalVelocity.magnitude;
             slider.SetSphericalVelocityWithLinearVelocity(slider.sphericalVelocity.magnitude * (transform.position - collider.transform.position).normalized);
             slider.StartCoroutine(slider.FreezeScreen(0.05f));
+            slider.sphericalVelocity = mag * slider.sphericalVelocity.normalized;
         }
     }
 }

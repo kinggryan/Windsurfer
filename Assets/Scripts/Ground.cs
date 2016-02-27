@@ -9,6 +9,8 @@ public class Ground : MonoBehaviour {
 
     public float fullRainTime;
 
+    public float groundDistance = 51.5f;
+
     private float rainAmount = 0f;
     private bool forest = false;
     new private Renderer renderer;
@@ -17,6 +19,9 @@ public class Ground : MonoBehaviour {
 	void Start () {
         renderer = GetComponent<Renderer>();
         renderer.material.color = rainAmount * forestFadeColor + (1 - rainAmount) * desertColor;
+
+        transform.rotation = Quaternion.LookRotation(Vector3.Cross(Vector3.up, transform.position.normalized), transform.position.normalized);
+        transform.position = groundDistance*transform.position.normalized;
     }
 	
 	// Update is called once per frame
@@ -27,7 +32,7 @@ public class Ground : MonoBehaviour {
     public void RainedOnAtPoint(Vector3 rainPoint)
     {
         if (!forest) {
-            rainAmount += Time.deltaTime * fullRainTime;
+            rainAmount += Time.deltaTime / fullRainTime;
             if (rainAmount >= 1.0)
             {
                 forest = true;
