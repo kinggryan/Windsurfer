@@ -11,6 +11,8 @@ public class Ground : MonoBehaviour {
 
     public float groundDistance = 51.5f;
 
+    public UnityEngine.UI.Text victoryText;
+
     private float rainAmount = 0f;
     private bool forest = false;
     new private Renderer renderer;
@@ -22,6 +24,8 @@ public class Ground : MonoBehaviour {
 
         transform.rotation = Quaternion.LookRotation(Vector3.Cross(Vector3.up, transform.position.normalized), transform.position.normalized);
         transform.position = groundDistance*transform.position.normalized;
+
+        Object.FindObjectOfType<GroundsRemainingController>().InitGround();
     }
 	
 	// Update is called once per frame
@@ -37,6 +41,8 @@ public class Ground : MonoBehaviour {
             {
                 forest = true;
                 renderer.material.color = forestCompleteColor;
+
+                Object.FindObjectOfType<GroundsRemainingController>().GroundRemoved();
             }
             else
             {

@@ -25,7 +25,7 @@ public class PlayerDamageTaker : MonoBehaviour {
         if (!invincible)
         {
             health.TakeDamage(damageTakenOnHit);
-            BecomeInvincible(invincibilityTime);
+            StartCoroutine(BecomeInvincible(invincibilityTime));
         }
     }
 

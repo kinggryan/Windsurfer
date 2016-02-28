@@ -142,7 +142,7 @@ public class PlayerMouseController : MonoBehaviour {
 
     void Brake(Vector3 inputDirection, Vector3 playerScreenMovementDirection)
     {
-        if(Vector3.Angle(inputDirection, playerScreenMovementDirection) >= maxTurnMouseMovementVectorAngle)
+        if(Input.GetButton("Brake")) // if(Vector3.Angle(inputDirection, playerScreenMovementDirection) >= maxTurnMouseMovementVectorAngle)
         {
             sphericalMovementVector = (sphericalMovementVector.magnitude - brakeSpeed * Time.deltaTime) * sphericalMovementVector.normalized;
         }
