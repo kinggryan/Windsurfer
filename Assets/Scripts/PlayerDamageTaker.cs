@@ -7,6 +7,8 @@ public class PlayerDamageTaker : MonoBehaviour {
     public int damageTakenOnHit;
     public float invincibilityTime = 0.5f;
 
+    public float hitMountainShakeIntensity = 0.5f;
+
     private PlayerHealth health;
     private bool invincible = false;
 
@@ -26,6 +28,12 @@ public class PlayerDamageTaker : MonoBehaviour {
         {
             health.TakeDamage(damageTakenOnHit);
             StartCoroutine(BecomeInvincible(invincibilityTime));
+
+            // Shake camera
+            Vector3 shakeDirection = Camera.main.transform.InverseTransformDirection(transform.position - collider.transform.position);
+            shakeDirection.z = 0;
+            shakeDirection.Normalize();
+            Camera.main.GetComponent<CameraShaker>().ShakeInDirectionWithIntensity(shakeDirection, hitMountainShakeIntensity);
         }
     }
 

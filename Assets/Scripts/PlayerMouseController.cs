@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(PlayerTrailEffectsManager))]
 public class PlayerMouseController : MonoBehaviour {
 
     public float fullSpeedBrakeTime = 1.0f;
@@ -32,8 +33,20 @@ public class PlayerMouseController : MonoBehaviour {
 
     private float boostTurnAmount;
 
+    private PlayerTrailEffectsManager trailEffectsManager;
+
+    void Start()
+    {
+        trailEffectsManager = GetComponent<PlayerTrailEffectsManager>();
+    }
+
 	// Update is called once per frame
 	void Update () {
+        if(Input.GetButtonDown("Boost"))
+        {
+            trailEffectsManager.StartCharging();
+        }
+
         // Slow down and charge
         if (Input.GetButton("Boost"))
         {
@@ -89,6 +102,7 @@ public class PlayerMouseController : MonoBehaviour {
                 SendStorm(GetWorldSpaceVectorFromInputVector(inputDirection), 30f, -1 * sphericalMovementVector);
             }
             speedCharge = 0f;
+            trailEffectsManager.StopCharging();
         }
 
         // Look
