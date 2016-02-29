@@ -50,4 +50,23 @@ public class Ground : MonoBehaviour {
             }
         }
     }
+
+    public void RainedOnBurst(float amountFull)
+    {
+        if (!forest)
+        {
+            rainAmount += amountFull * fullRainTime;
+            if (rainAmount >= 1.0)
+            {
+                forest = true;
+                renderer.material.color = forestCompleteColor;
+
+                Object.FindObjectOfType<GroundsRemainingController>().GroundRemoved();
+            }
+            else
+            {
+                renderer.material.color = rainAmount * forestFadeColor + (1 - rainAmount) * desertColor;
+            }
+        }
+    }
 }

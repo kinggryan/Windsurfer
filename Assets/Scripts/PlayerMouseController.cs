@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(PlayerTrailEffectsManager))]
 public class PlayerMouseController : MonoBehaviour {
@@ -24,8 +25,14 @@ public class PlayerMouseController : MonoBehaviour {
 
     public float maxBoostTurnSpeed;
 
+    public float playerRainRadius = 2f;
+    public float rainWhileDriftDistance = 15f;
+    public float rainFromBoostDistance = 15f;
+    public float rainFromBoostSpreadDegrees = 30f;
+
     public GameObject windGustPrefab;
     public GameObject directionIndicator;
+    public Renderer rainFromChargeIndicator;
 
     public bool mouseInputMode;
 
@@ -38,6 +45,7 @@ public class PlayerMouseController : MonoBehaviour {
     void Start()
     {
         trailEffectsManager = GetComponent<PlayerTrailEffectsManager>();
+        rainFromChargeIndicator.enabled = false;
     }
 
 	// Update is called once per frame
@@ -45,12 +53,15 @@ public class PlayerMouseController : MonoBehaviour {
         if(Input.GetButtonDown("Boost"))
         {
             trailEffectsManager.StartCharging();
+            rainFromChargeIndicator.enabled = true;
         }
 
         // Slow down and charge
         if (Input.GetButton("Boost"))
         {
             speedCharge += Time.deltaTime;
+
+            RainFromCharge(rainWhileDriftDistance, playerRainRadius);
         }
 
         if (sphericalMovementVector.magnitude > minGlideSpeed)
@@ -103,11 +114,16 @@ public class PlayerMouseController : MonoBehaviour {
             }
             speedCharge = 0f;
             trailEffectsManager.StopCharging();
+            rainFromChargeIndicator.enabled = false;
+            RainFromBoost(rainFromBoostDistance, playerRainRadius, rainFromBoostSpreadDegrees);
         }
 
         // Look
         Vector3 lookDirection = Quaternion.AngleAxis(boostTurnAmount, transform.position) * sphericalMovementVector;
         directionIndicator.transform.rotation = Quaternion.LookRotation(lookDirection, transform.position.normalized);
+
+        // Rain
+       // RainBeneathPlayer(playerRainRadius);
     }
 
     Vector3 GetWorldSpaceVectorFromInputVector(Vector3 inputVector)
@@ -159,6 +175,64 @@ public class PlayerMouseController : MonoBehaviour {
         if(Input.GetButton("Brake")) // if(Vector3.Angle(inputDirection, playerScreenMovementDirection) >= maxTurnMouseMovementVectorAngle)
         {
             sphericalMovementVector = (sphericalMovementVector.magnitude - brakeSpeed * Time.deltaTime) * sphericalMovementVector.normalized;
+        }
+    }
+
+    void RainBeneathPlayer(float rainRadius)
+    {   
+        foreach (RaycastHit hitInfo in Physics.SphereCastAll(transform.position, rainRadius, -1 * transform.position, 0.5f * transform.position.magnitude))
+        {
+            Ground ground = hitInfo.collider.GetComponent<Ground>();
+            if (ground)
+            {
+                ground.RainedOnAtPoint(hitInfo.point);
+            }
+        }
+    }
+
+    void RainFromCharge(float chargeRainDistance,float rainRadius)
+    {
+        foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, transform.position + -chargeRainDistance * directionIndicator.transform.forward, rainRadius, -transform.position.normalized,0.5f*transform.position.magnitude))
+        {
+            Ground ground = hitInfo.collider.GetComponent<Ground>();
+            if (ground)
+            {
+                ground.RainedOnAtPoint(hitInfo.point);
+            }
+        }
+    }
+
+    void RainFromBoost(float boostRainDistance,float rainRadius,float rainSpreadDegrees)
+    {
+        // Use a hash set to guarantee unique colliders
+        HashSet<Collider> hitGrounds = new HashSet<Collider>();
+
+        // Create the end points of our spread
+        List<Vector3> endPositions = new List<Vector3>();
+        for(float spreadAngle = -0.5f*rainSpreadDegrees; spreadAngle <= rainSpreadDegrees; spreadAngle += 10f)
+        {
+            Vector3 endPosition = transform.position - boostRainDistance * (Quaternion.AngleAxis(spreadAngle,transform.position.normalized) * directionIndicator.transform.forward);
+            endPositions.Add(endPosition);
+        }
+
+        // Do all the capsule casts
+        foreach(Vector3 endPosition in endPositions)
+        {
+            foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, endPosition, rainRadius, -transform.position.normalized, 0.5f * transform.position.magnitude))
+            {
+                hitGrounds.Add(hitInfo.collider);
+            }
+        }
+        
+        // Rain on the colliders
+        foreach(Collider col in hitGrounds)
+        {
+            Ground ground = col.GetComponent<Ground>();
+            if (ground)
+            {
+                Debug.Log("Thang");
+                ground.RainedOnBurst(0.75f);
+            }
         }
     }
 }
