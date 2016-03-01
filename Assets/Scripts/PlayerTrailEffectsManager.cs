@@ -6,6 +6,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 
     public Color chargingTrailColor;
     public Renderer rainFromChargeIndicator;
+    public ParticleSystem chargeRainParticleSystem;
 
     private TrailRenderer trailRenderer;
 
@@ -13,6 +14,8 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 	void Start () {
         trailRenderer = GetComponent<TrailRenderer>();
         rainFromChargeIndicator.enabled = false;
+        ParticleSystem.EmissionModule emission = chargeRainParticleSystem.emission;
+        emission.enabled = false;
     }
 
     // Update is called once per frame
@@ -22,12 +25,16 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 
     public void StartCharging()
     {
-        rainFromChargeIndicator.enabled = true;
+       // rainFromChargeIndicator.enabled = true;
+        ParticleSystem.EmissionModule emission = chargeRainParticleSystem.emission;
+        emission.enabled = true;
     }
 
     public void StopCharging()
     {
         rainFromChargeIndicator.enabled = false;
+        ParticleSystem.EmissionModule emission = chargeRainParticleSystem.emission;
+        emission.enabled = false;
     }
 
     public void StartBraking()
