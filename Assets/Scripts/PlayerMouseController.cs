@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class PlayerMouseController : MonoBehaviour {
 
     [Header("Basic Movement Rates")]
+    public float minSpeed = 30f;
     public float maxSpeed = 80f;
     public float brakeRate = 20f;
     public float maxChargeTime = 0.6f;
@@ -91,6 +92,12 @@ public class PlayerMouseController : MonoBehaviour {
         // Steer and brake
         Steer( inputDirection, movementDirectionScreenSpace, Input.GetButton("Boost"));
         Brake();
+
+        // Push to above min speed
+        if(sphericalMovementVector.magnitude < minSpeed)
+        {
+            sphericalMovementVector = minSpeed * sphericalMovementVector.normalized;
+        }
 
         // Move
         transform.RotateAround(Vector3.zero, sphericalMovementVector, sphericalMovementVector.magnitude * Time.deltaTime);
