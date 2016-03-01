@@ -1,72 +1,71 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(PlayerTrailEffectsManager))]
 public class PlayerMouseController : MonoBehaviour {
 
-    public float fullSpeedBrakeTime = 1.0f;
+    [Header("Basic Movement Rates")]
     public float maxSpeed = 80f;
-    public float maxSpeedChargeTime = 0.6f;
+    public float brakeRate = 20f;
+    public float maxChargeTime = 0.6f;
     public float minChargeTime = 0.3f;
-    public float additionalSpeedOnClick = 20f;
-    public float minAdditionalSpeedOnClick = 20f;
+    public float maxBoostSpeed = 20f;
+    public float minBoostSpeed = 20f;
+    public float minGlideSpeed = 15f;
+    public float returnToGlideRate = 5f;
     public Vector3 sphericalMovementVector;
 
+    [Header("Steering Properties")]
     public float maxTurnSpeed;
-    public float minTurnMouseMovementVectorAngle;
-    public float maxTurnMouseMovementVectorAngle;
-    public float minDistanceForTurning;
-    public float maxDistanceForTurning = 160f;
+    public float minTurnInputAngle;
+    public float maxTurnInputAngle;
+    public float maxChargeTurnSpeed;
 
-    public float brakeSpeed = 10f;
-
-    public float minGlideSpeed = 15f;
-
-    public float maxBoostTurnSpeed;
-
+    [Header("Rain Properties")]
     public float playerRainRadius = 2f;
-    public float rainWhileDriftDistance = 15f;
+    public float rainFromChargeDistance = 15f;
     public float rainFromBoostDistance = 15f;
     public float rainFromBoostSpreadDegrees = 30f;
 
-    public GameObject windGustPrefab;
+    [Header("Game Object References")]
     public GameObject directionIndicator;
-    public Renderer rainFromChargeIndicator;
 
+    [Header("Mouse Input")]
     public bool mouseInputMode;
+    public float minMouseDistanceFromPlayerToTurnScreenSpace = 160f;
 
+    // Private Properties
     private float speedCharge = 0f;
-
     private float boostTurnAmount;
-
     private PlayerTrailEffectsManager trailEffectsManager;
 
+    // Methods
     void Start()
     {
         trailEffectsManager = GetComponent<PlayerTrailEffectsManager>();
-        rainFromChargeIndicator.enabled = false;
     }
 
 	// Update is called once per frame
 	void Update () {
+        // Update Effects while boosting
         if(Input.GetButtonDown("Boost"))
         {
             trailEffectsManager.StartCharging();
-            rainFromChargeIndicator.enabled = true;
         }
 
         // Slow down and charge
         if (Input.GetButton("Boost"))
         {
             speedCharge += Time.deltaTime;
-
-            RainFromCharge(rainWhileDriftDistance, playerRainRadius);
+            RainFromCharge(rainFromChargeDistance, playerRainRadius);
         }
 
+        // return to glide
         if (sphericalMovementVector.magnitude > minGlideSpeed)
         {
-            sphericalMovementVector = sphericalMovementVector.normalized * Mathf.Max(minGlideSpeed, sphericalMovementVector.magnitude - Time.deltaTime * maxSpeed / fullSpeedBrakeTime);
+            sphericalMovementVector = sphericalMovementVector.normalized * Mathf.Max(minGlideSpeed, sphericalMovementVector.magnitude - Time.deltaTime * returnToGlideRate);
         }
 
         // Get input
@@ -76,7 +75,7 @@ public class PlayerMouseController : MonoBehaviour {
         {
             Vector3 positionScreenSpace = Camera.main.WorldToScreenPoint(transform.position);
             movementDirectionScreenSpace.z = 0;
-            inputDirection = (positionScreenSpace - Input.mousePosition) / maxDistanceForTurning;
+            inputDirection = (positionScreenSpace - Input.mousePosition) / minMouseDistanceFromPlayerToTurnScreenSpace;
             inputDirection *= -1;
         }
         else
@@ -91,7 +90,7 @@ public class PlayerMouseController : MonoBehaviour {
 
         // Steer and brake
         Steer( inputDirection, movementDirectionScreenSpace, Input.GetButton("Boost"));
-        Brake( inputDirection, movementDirectionScreenSpace);
+        Brake();
 
         // Move
         transform.RotateAround(Vector3.zero, sphericalMovementVector, sphericalMovementVector.magnitude * Time.deltaTime);
@@ -103,27 +102,21 @@ public class PlayerMouseController : MonoBehaviour {
             {
                 Quaternion boostDirectionTurn = Quaternion.AngleAxis(boostTurnAmount, transform.position);
 
-                sphericalMovementVector = (Mathf.Min(1f, speedCharge / maxSpeedChargeTime) * (additionalSpeedOnClick - minAdditionalSpeedOnClick) + minAdditionalSpeedOnClick) * (boostDirectionTurn * sphericalMovementVector.normalized);
+                sphericalMovementVector = (Mathf.Min(1f, speedCharge / maxChargeTime) * (maxBoostSpeed - minBoostSpeed) + minBoostSpeed) * (boostDirectionTurn * sphericalMovementVector.normalized);
                 boostTurnAmount = 0;
                 if (sphericalMovementVector.magnitude > maxSpeed)
                 {
                     sphericalMovementVector = sphericalMovementVector.normalized * maxSpeed;
                 }
-
-                SendStorm(GetWorldSpaceVectorFromInputVector(inputDirection), 30f, -1 * sphericalMovementVector);
             }
             speedCharge = 0f;
             trailEffectsManager.StopCharging();
-            rainFromChargeIndicator.enabled = false;
             RainFromBoost(rainFromBoostDistance, playerRainRadius, rainFromBoostSpreadDegrees);
         }
 
         // Look
         Vector3 lookDirection = Quaternion.AngleAxis(boostTurnAmount, transform.position) * sphericalMovementVector;
         directionIndicator.transform.rotation = Quaternion.LookRotation(lookDirection, transform.position.normalized);
-
-        // Rain
-       // RainBeneathPlayer(playerRainRadius);
     }
 
     Vector3 GetWorldSpaceVectorFromInputVector(Vector3 inputVector)
@@ -139,20 +132,20 @@ public class PlayerMouseController : MonoBehaviour {
         return Camera.main.transform.TransformDirection(movementDirectionScreenSpace);
     }
 
-    void SendStorm(Vector3 stormDirection,float stormDistance,Vector3 sphericalVelocity)
-    {
-        PlayerWindGust gust = ((GameObject)GameObject.Instantiate(windGustPrefab, transform.position, Quaternion.LookRotation(Vector3.Cross(Vector3.up,transform.position),transform.position))).GetComponent<PlayerWindGust>();
-        gust.LaunchWithSphericalVelocityAndLifespan(sphericalVelocity, stormDistance / sphericalVelocity.magnitude);
-    }
-
+    /// <summary>
+    /// Steers the player as needed based on the given inputs.
+    /// </summary>
+    /// <param name="inputDirection"></param>
+    /// <param name="playerScreenMovementDirection"></param>
+    /// <param name="chargingBoost"></param>
     void Steer(Vector3 inputDirection, Vector3 playerScreenMovementDirection, bool chargingBoost)
     {
         Vector3 currentBoostDirection = Quaternion.AngleAxis(boostTurnAmount, transform.position) * sphericalMovementVector;
         Vector3 currentBoostDirectionScreenSpace = Camera.main.transform.InverseTransformDirection(Vector3.Cross(currentBoostDirection, transform.position)).normalized;
 
-        if (Vector3.Angle(inputDirection, currentBoostDirectionScreenSpace) >= minTurnMouseMovementVectorAngle && inputDirection.magnitude >= 1 && Vector3.Angle(inputDirection, currentBoostDirectionScreenSpace) <= maxTurnMouseMovementVectorAngle)
+        if (Vector3.Angle(inputDirection, currentBoostDirectionScreenSpace) >= minTurnInputAngle && inputDirection.magnitude >= 1 && Vector3.Angle(inputDirection, currentBoostDirectionScreenSpace) <= maxTurnInputAngle)
         {
-            float turnAmount = (Vector3.Angle(inputDirection, playerScreenMovementDirection) - minTurnMouseMovementVectorAngle) / (maxTurnMouseMovementVectorAngle - minTurnMouseMovementVectorAngle);
+            float turnAmount = (Vector3.Angle(inputDirection, playerScreenMovementDirection) - minTurnInputAngle) / (maxTurnInputAngle - minTurnInputAngle);
             turnAmount = Mathf.Clamp(turnAmount, 0f, 1f);
             float sign = Vector3.Angle(Vector3.Cross(Vector3.forward, playerScreenMovementDirection), inputDirection) <= 90 ? -1 : 1;
             sphericalMovementVector = Quaternion.AngleAxis(sign * Time.deltaTime * turnAmount * maxTurnSpeed, transform.position) * sphericalMovementVector ;
@@ -161,35 +154,31 @@ public class PlayerMouseController : MonoBehaviour {
             if(chargingBoost)
             {
                 currentBoostDirectionScreenSpace.z = 0;
-                turnAmount = Vector3.Angle(inputDirection, currentBoostDirection) / maxTurnMouseMovementVectorAngle;
+                turnAmount = Vector3.Angle(inputDirection, currentBoostDirection) / minTurnInputAngle;
                 turnAmount = Mathf.Clamp(turnAmount, 0f, 1f);
                 sign = Vector3.Angle(Vector3.Cross(Vector3.forward, currentBoostDirectionScreenSpace), inputDirection) <= 90 ? -1 : 1;
 
-                boostTurnAmount += Time.deltaTime * turnAmount * sign * maxBoostTurnSpeed;
+                boostTurnAmount += Time.deltaTime * turnAmount * sign * maxChargeTurnSpeed;
             }
         }
     }
 
-    void Brake(Vector3 inputDirection, Vector3 playerScreenMovementDirection)
+    /// <summary>
+    /// Brakes the player if the player should brake based on inputs.
+    /// </summary>
+    void Brake()
     {
-        if(Input.GetButton("Brake")) // if(Vector3.Angle(inputDirection, playerScreenMovementDirection) >= maxTurnMouseMovementVectorAngle)
+        if(Input.GetButton("Brake"))
         {
-            sphericalMovementVector = (sphericalMovementVector.magnitude - brakeSpeed * Time.deltaTime) * sphericalMovementVector.normalized;
+            sphericalMovementVector = (sphericalMovementVector.magnitude - brakeRate * Time.deltaTime) * sphericalMovementVector.normalized;
         }
     }
 
-    void RainBeneathPlayer(float rainRadius)
-    {   
-        foreach (RaycastHit hitInfo in Physics.SphereCastAll(transform.position, rainRadius, -1 * transform.position, 0.5f * transform.position.magnitude))
-        {
-            Ground ground = hitInfo.collider.GetComponent<Ground>();
-            if (ground)
-            {
-                ground.RainedOnAtPoint(hitInfo.point);
-            }
-        }
-    }
-
+    /// <summary>
+    /// Rains behind the player.
+    /// </summary>
+    /// <param name="chargeRainDistance"></param>
+    /// <param name="rainRadius"></param>
     void RainFromCharge(float chargeRainDistance,float rainRadius)
     {
         foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, transform.position + -chargeRainDistance * directionIndicator.transform.forward, rainRadius, -transform.position.normalized,0.5f*transform.position.magnitude))
@@ -202,6 +191,12 @@ public class PlayerMouseController : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Rains in a cone as the player boosts. This will do a burst rain, rather than an incremental rain.
+    /// </summary>
+    /// <param name="boostRainDistance"></param>
+    /// <param name="rainRadius"></param>
+    /// <param name="rainSpreadDegrees"></param>
     void RainFromBoost(float boostRainDistance,float rainRadius,float rainSpreadDegrees)
     {
         // Use a hash set to guarantee unique colliders
@@ -230,7 +225,6 @@ public class PlayerMouseController : MonoBehaviour {
             Ground ground = col.GetComponent<Ground>();
             if (ground)
             {
-                Debug.Log("Thang");
                 ground.RainedOnBurst(0.75f);
             }
         }
