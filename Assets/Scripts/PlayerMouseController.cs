@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(PlayerTrailEffectsManager))]
+[RequireComponent(typeof(PlayerUI))]
 public class PlayerMouseController : MonoBehaviour {
 
     [Header("Basic Movement Rates")]
@@ -29,6 +30,9 @@ public class PlayerMouseController : MonoBehaviour {
     public float rainFromChargeDistance = 15f;
     public float rainFromBoostDistance = 15f;
     public float rainFromBoostSpreadDegrees = 30f;
+    public float rainMeterLossPerSecondCharging = 0.2f;
+    public float rainMeterLossPerBoost = 0.33f;
+    public float rainMeterGainPerCloud = 0.25f;
 
     [Header("Game Object References")]
     public GameObject directionIndicator;
@@ -41,11 +45,20 @@ public class PlayerMouseController : MonoBehaviour {
     private float speedCharge = 0f;
     private float boostTurnAmount;
     private PlayerTrailEffectsManager trailEffectsManager;
+    private PlayerUI ui;
+    private float rainMeterAmount = 0f;
 
-    // Methods
+    // Public Methods
+    public void ChargeRainMeter(float amount)
+    {
+        rainMeterAmount = Mathf.Min(1, rainMeterAmount + amount);
+    }
+
+    // Private Methods
     void Start()
     {
         trailEffectsManager = GetComponent<PlayerTrailEffectsManager>();
+        ui = GetComponent<PlayerUI>();
     }
 
 	// Update is called once per frame
@@ -124,6 +137,11 @@ public class PlayerMouseController : MonoBehaviour {
         // Look
         Vector3 lookDirection = Quaternion.AngleAxis(boostTurnAmount, transform.position) * sphericalMovementVector;
         directionIndicator.transform.rotation = Quaternion.LookRotation(lookDirection, transform.position.normalized);
+
+        // Update Visual Components
+        trailEffectsManager.UpdateMovement(sphericalMovementVector, lookDirection);
+        trailEffectsManager.UpdateSpeed((sphericalMovementVector.magnitude - minSpeed) / (maxSpeed - minSpeed));
+        ui.UpdateRainMeter(rainMeterAmount);
     }
 
     Vector3 GetWorldSpaceVectorFromInputVector(Vector3 inputVector)
@@ -188,12 +206,16 @@ public class PlayerMouseController : MonoBehaviour {
     /// <param name="rainRadius"></param>
     void RainFromCharge(float chargeRainDistance,float rainRadius)
     {
-        foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, transform.position + -chargeRainDistance * directionIndicator.transform.forward, rainRadius, -transform.position.normalized,0.5f*transform.position.magnitude))
+        if (rainMeterAmount > 0)
         {
-            Ground ground = hitInfo.collider.GetComponent<Ground>();
-            if (ground)
+            rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerSecondCharging*Time.deltaTime);
+            foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, transform.position + -chargeRainDistance * directionIndicator.transform.forward, rainRadius, -transform.position.normalized, 0.5f * transform.position.magnitude))
             {
-                ground.RainedOnAtPoint(hitInfo.point);
+                Ground ground = hitInfo.collider.GetComponent<Ground>();
+                if (ground)
+                {
+                    ground.RainedOnAtPoint(hitInfo.point);
+                }
             }
         }
     }
@@ -206,34 +228,49 @@ public class PlayerMouseController : MonoBehaviour {
     /// <param name="rainSpreadDegrees"></param>
     void RainFromBoost(float boostRainDistance,float rainRadius,float rainSpreadDegrees)
     {
-        // Use a hash set to guarantee unique colliders
-        HashSet<Collider> hitGrounds = new HashSet<Collider>();
-
-        // Create the end points of our spread
-        List<Vector3> endPositions = new List<Vector3>();
-        for(float spreadAngle = -0.5f*rainSpreadDegrees; spreadAngle <= rainSpreadDegrees; spreadAngle += 10f)
+        if (rainMeterAmount > 0)
         {
-            Vector3 endPosition = transform.position - boostRainDistance * (Quaternion.AngleAxis(spreadAngle,transform.position.normalized) * directionIndicator.transform.forward);
-            endPositions.Add(endPosition);
-        }
+            // Drain rain meter
+            rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerBoost);
 
-        // Do all the capsule casts
-        foreach(Vector3 endPosition in endPositions)
-        {
-            foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, endPosition, rainRadius, -transform.position.normalized, 0.5f * transform.position.magnitude))
+            // Use a hash set to guarantee unique colliders
+            HashSet<Collider> hitGrounds = new HashSet<Collider>();
+
+            // Create the end points of our spread
+            List<Vector3> endPositions = new List<Vector3>();
+            for (float spreadAngle = -0.5f * rainSpreadDegrees; spreadAngle <= rainSpreadDegrees; spreadAngle += 10f)
             {
-                hitGrounds.Add(hitInfo.collider);
+                Vector3 endPosition = transform.position - boostRainDistance * (Quaternion.AngleAxis(spreadAngle, transform.position.normalized) * directionIndicator.transform.forward);
+                endPositions.Add(endPosition);
+            }
+
+            // Do all the capsule casts
+            foreach (Vector3 endPosition in endPositions)
+            {
+                foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, endPosition, rainRadius, -transform.position.normalized, 0.5f * transform.position.magnitude))
+                {
+                    hitGrounds.Add(hitInfo.collider);
+                }
+            }
+
+            // Rain on the colliders
+            foreach (Collider col in hitGrounds)
+            {
+                Ground ground = col.GetComponent<Ground>();
+                if (ground)
+                {
+                    ground.RainedOnBurst(0.75f);
+                }
             }
         }
-        
-        // Rain on the colliders
-        foreach(Collider col in hitGrounds)
+    }
+
+    void OnTriggerEnter(Collider collider)
+    {
+        Cloud cloud = collider.GetComponent<Cloud>();
+        if (cloud && cloud.HitPlayer())
         {
-            Ground ground = col.GetComponent<Ground>();
-            if (ground)
-            {
-                ground.RainedOnBurst(0.75f);
-            }
+            rainMeterAmount = Mathf.Min(1, rainMeterAmount + rainMeterGainPerCloud);
         }
     }
 }

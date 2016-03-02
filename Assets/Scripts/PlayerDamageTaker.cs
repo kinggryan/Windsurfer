@@ -24,7 +24,7 @@ public class PlayerDamageTaker : MonoBehaviour {
 
     void OnTriggerEnter(Collider collider)
     {
-        if (!invincible)
+        if (collider.GetComponent<PlayerObstacle>() && !invincible)
         {
             health.TakeDamage(damageTakenOnHit);
             StartCoroutine(BecomeInvincible(invincibilityTime));
