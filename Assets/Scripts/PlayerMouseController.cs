@@ -30,9 +30,11 @@ public class PlayerMouseController : MonoBehaviour {
     public float rainFromChargeDistance = 15f;
     public float rainFromBoostDistance = 15f;
     public float rainFromBoostSpreadDegrees = 30f;
+    public float rainMeterGainPerCloud = 0.25f;
+    public float rainMeterLossPerSecond = 0.25f;
+    // The following two properties are not currently used.
     public float rainMeterLossPerSecondCharging = 0.2f;
     public float rainMeterLossPerBoost = 0.33f;
-    public float rainMeterGainPerCloud = 0.25f;
 
     [Header("Game Object References")]
     public GameObject directionIndicator;
@@ -63,6 +65,9 @@ public class PlayerMouseController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+        // Cause rain loss
+        rainMeterAmount = Mathf.Max(0, rainMeterAmount - Time.deltaTime * rainMeterLossPerSecond);
+
         // Update Effects while boosting
         if(Input.GetButtonDown("Boost"))
         {
@@ -208,7 +213,7 @@ public class PlayerMouseController : MonoBehaviour {
     {
         if (rainMeterAmount > 0)
         {
-            rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerSecondCharging*Time.deltaTime);
+           // rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerSecondCharging*Time.deltaTime);
             foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, transform.position + -chargeRainDistance * directionIndicator.transform.forward, rainRadius, -transform.position.normalized, 0.5f * transform.position.magnitude))
             {
                 Ground ground = hitInfo.collider.GetComponent<Ground>();
@@ -231,7 +236,7 @@ public class PlayerMouseController : MonoBehaviour {
         if (rainMeterAmount > 0)
         {
             // Drain rain meter
-            rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerBoost);
+          //  rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerBoost);
 
             // Use a hash set to guarantee unique colliders
             HashSet<Collider> hitGrounds = new HashSet<Collider>();
