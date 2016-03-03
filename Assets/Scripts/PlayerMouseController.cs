@@ -146,6 +146,7 @@ public class PlayerMouseController : MonoBehaviour {
         // Update Visual Components
         trailEffectsManager.UpdateMovement(sphericalMovementVector, lookDirection);
         trailEffectsManager.UpdateSpeed((sphericalMovementVector.magnitude - minSpeed) / (maxSpeed - minSpeed));
+        trailEffectsManager.UpdateRainMeter(rainMeterAmount);
         ui.UpdateRainMeter(rainMeterAmount);
     }
 
