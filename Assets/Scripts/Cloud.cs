@@ -5,6 +5,7 @@ public class Cloud : MonoBehaviour {
 
     public float rainDrainedOnPlayerHit = 0.34f;
     public float minScale = 12;
+
     private float rainMeter = 1.0f;
     private float startingScale;
     private bool canHitPlayer = true;
@@ -13,13 +14,8 @@ public class Cloud : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         startingScale = transform.localScale.x;
-	}
+    }
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
     public bool HitPlayer()
     {
         if(!canHitPlayer)
