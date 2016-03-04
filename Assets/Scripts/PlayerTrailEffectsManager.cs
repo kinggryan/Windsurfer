@@ -12,21 +12,18 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public AnimationCurve rainEmissionCurve;
 
     public Color chargingTrailColor;
-    public Renderer rainFromChargeIndicator;
     public ParticleSystem rainParticleSystem;
     public ParticleSystem chargeRainParticleSystem;
     public ParticleSystem boostRainParticleSystem;
 
     private TrailRenderer trailRenderer;
     private float rainMeter;
+    private bool charging = false;
 
 	// Use this for initialization
 	void Start () {
         trailRenderer = GetComponent<TrailRenderer>();
-        rainFromChargeIndicator.enabled = false;
-        ParticleSystem.EmissionModule emission = rainParticleSystem.emission;
-        emission.enabled = false;
-        emission = chargeRainParticleSystem.emission;
+        ParticleSystem.EmissionModule emission = chargeRainParticleSystem.emission;
         emission.enabled = false;
     }
 
@@ -37,7 +34,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 
     public void StartCharging()
     {
-        // rainFromChargeIndicator.enabled = true;
+        charging = true; 
         if (rainMeter > 0)
         {
             ParticleSystem.EmissionModule emission = chargeRainParticleSystem.emission;
@@ -47,7 +44,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 
     public void StopCharging()
     {
-        //rainFromChargeIndicator.enabled = false;
+        charging = false;
         ParticleSystem.EmissionModule emission = chargeRainParticleSystem.emission;
         emission.enabled = false;
         if(rainMeter > 0)
@@ -92,10 +89,20 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
         {
             emission.rate = new ParticleSystem.MinMaxCurve(rainEmissionCurve.Evaluate(rainMeter));
             emission.enabled = true;
+            if (charging && !chargeRainParticleSystem.emission.enabled)
+            {
+                emission = chargeRainParticleSystem.emission;
+                emission.enabled = true;
+            }
         }
         else
         {
             emission.enabled = false;
+            if (charging && chargeRainParticleSystem.emission.enabled)
+            {
+                emission = chargeRainParticleSystem.emission;
+                emission.enabled = false;
+            }
         }
     }
 }

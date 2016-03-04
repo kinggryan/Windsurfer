@@ -24,6 +24,7 @@ public class PlayerMouseController : MonoBehaviour {
     public float minTurnInputAngle;
     public float maxTurnInputAngle;
     public float maxChargeTurnSpeed;
+    public float maxChargeDirectionAngle;
 
     [Header("Rain Properties")]
     public float playerRainRadius = 2f;
@@ -171,6 +172,8 @@ public class PlayerMouseController : MonoBehaviour {
     /// <param name="chargingBoost"></param>
     void Steer(Vector3 inputDirection, Vector3 playerScreenMovementDirection, bool chargingBoost)
     {
+        boostTurnAmount = boostTurnAmount % 360;
+        boostTurnAmount = Mathf.Clamp(boostTurnAmount,-maxChargeDirectionAngle, maxChargeDirectionAngle);
         Vector3 currentBoostDirection = Quaternion.AngleAxis(boostTurnAmount, transform.position) * sphericalMovementVector;
         Vector3 currentBoostDirectionScreenSpace = Camera.main.transform.InverseTransformDirection(Vector3.Cross(currentBoostDirection, transform.position)).normalized;
 
