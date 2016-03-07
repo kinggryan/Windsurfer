@@ -33,7 +33,7 @@ public class Ground : MonoBehaviour {
 	
 	}
 
-    public void RainedOnAtPoint(Vector3 rainPoint)
+    public void RainedOnAtPoint(Vector3 rainPoint,float rainMultiplier)
     {
         if (!forest) {
             rainAmount += Time.deltaTime / fullRainTime;

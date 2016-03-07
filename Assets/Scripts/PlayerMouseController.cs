@@ -145,7 +145,7 @@ public class PlayerMouseController : MonoBehaviour {
         directionIndicator.transform.rotation = Quaternion.LookRotation(lookDirection, transform.position.normalized);
 
         // Update Visual Components
-        trailEffectsManager.UpdateMovement(sphericalMovementVector, lookDirection);
+        trailEffectsManager.UpdateMovement(sphericalMovementVector, lookDirection,maxChargeDirectionAngle);
         trailEffectsManager.UpdateSpeed((sphericalMovementVector.magnitude - minSpeed) / (maxSpeed - minSpeed));
         trailEffectsManager.UpdateRainMeter(rainMeterAmount);
         ui.UpdateRainMeter(rainMeterAmount);
@@ -217,13 +217,15 @@ public class PlayerMouseController : MonoBehaviour {
     {
         if (rainMeterAmount > 0)
         {
+            // Scale rain based off of how sharply you are turning.
+            float rainMultiplier = boostTurnAmount / maxChargeDirectionAngle;
            // rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerSecondCharging*Time.deltaTime);
             foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, transform.position + -chargeRainDistance * directionIndicator.transform.forward, rainRadius, -transform.position.normalized, 0.5f * transform.position.magnitude))
             {
                 Ground ground = hitInfo.collider.GetComponent<Ground>();
                 if (ground)
                 {
-                    ground.RainedOnAtPoint(hitInfo.point);
+                    ground.RainedOnAtPoint(hitInfo.point,rainMultiplier);
                 }
             }
         }

@@ -19,7 +19,7 @@ public class Puck : MonoBehaviour {
             Ground ground = hitInfo.collider.GetComponent<Ground>();
             if(ground)
             {
-                ground.RainedOnAtPoint(hitInfo.point);
+            //    ground.RainedOnAtPoint(hitInfo.point);
             }
         }
 	}

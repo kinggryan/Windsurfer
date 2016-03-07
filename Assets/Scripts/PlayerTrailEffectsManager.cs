@@ -10,6 +10,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public float minSpeedFOV = 50f;
 
     public AnimationCurve rainEmissionCurve;
+    public float chargeRainEmissionRate;
 
     public Color chargingTrailColor;
     public ParticleSystem rainParticleSystem;
@@ -19,6 +20,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     private TrailRenderer trailRenderer;
     private float rainMeter;
     private bool charging = false;
+    private float chargeRainMultiplier;
 
 	// Use this for initialization
 	void Start () {
@@ -63,8 +65,9 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 
     }
 
-    public void UpdateMovement(Vector3 playerSphericalMotionVector,Vector3 playerLookDirection)
+    public void UpdateMovement(Vector3 playerSphericalMotionVector,Vector3 playerLookDirection,float playerMaxTurnDirection)
     {
+        chargeRainMultiplier = Vector3.Angle(playerSphericalMotionVector, playerLookDirection) / playerMaxTurnDirection;
    /*     float sign = Vector3.Angle(Vector3.Cross(playerSphericalMotionVector, transform.position), playerLookDirection) <= 90 ? -1 : 1;
         ParticleSystem.VelocityOverLifetimeModule vm = chargeRainParticleSystem.velocityOverLifetime;
         float min = Mathf.Min(sign * Vector3.Angle(playerSphericalMotionVector, playerLookDirection),0);
@@ -89,10 +92,14 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
         {
             emission.rate = new ParticleSystem.MinMaxCurve(rainEmissionCurve.Evaluate(rainMeter));
             emission.enabled = true;
-            if (charging && !chargeRainParticleSystem.emission.enabled)
+            if (charging)
             {
                 emission = chargeRainParticleSystem.emission;
-                emission.enabled = true;
+                if (!emission.enabled)
+                {
+                    emission.enabled = true;
+                }
+                emission.rate = new ParticleSystem.MinMaxCurve(chargeRainMultiplier * chargeRainEmissionRate);
             }
         }
         else
