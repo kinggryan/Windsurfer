@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -218,7 +217,7 @@ public class PlayerMouseController : MonoBehaviour {
         if (rainMeterAmount > 0)
         {
             // Scale rain based off of how sharply you are turning.
-            float rainMultiplier = boostTurnAmount / maxChargeDirectionAngle;
+            float rainMultiplier = Mathf.Abs(boostTurnAmount / maxChargeDirectionAngle);
            // rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerSecondCharging*Time.deltaTime);
             foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, transform.position + -chargeRainDistance * directionIndicator.transform.forward, rainRadius, -transform.position.normalized, 0.5f * transform.position.magnitude))
             {

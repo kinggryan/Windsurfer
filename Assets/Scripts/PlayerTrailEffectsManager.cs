@@ -2,6 +2,7 @@
 using System.Collections;
 
 [RequireComponent(typeof(TrailRenderer))]
+[RequireComponent(typeof(AudioSource))]
 public class PlayerTrailEffectsManager : MonoBehaviour {
 
     public float maxSpeedCameraDistance = 30f;
@@ -17,6 +18,10 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public ParticleSystem chargeRainParticleSystem;
     public ParticleSystem boostRainParticleSystem;
 
+    public AudioSource rainOverWaterAudio;
+
+    public float rainOverWaterAudioMaxVolume = 0.5f;
+
     private TrailRenderer trailRenderer;
     private float rainMeter;
     private bool charging = false;
@@ -27,6 +32,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
         trailRenderer = GetComponent<TrailRenderer>();
         ParticleSystem.EmissionModule emission = chargeRainParticleSystem.emission;
         emission.enabled = false;
+        rainOverWaterAudio.volume = 0f;
     }
 
     // Update is called once per frame
@@ -100,6 +106,12 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
                     emission.enabled = true;
                 }
                 emission.rate = new ParticleSystem.MinMaxCurve(chargeRainMultiplier * chargeRainEmissionRate);
+
+                rainOverWaterAudio.volume = Mathf.MoveTowards(rainOverWaterAudio.volume,rainOverWaterAudioMaxVolume,Time.deltaTime*5);
+            }
+            else
+            {
+                rainOverWaterAudio.volume = 0;
             }
         }
         else
@@ -110,6 +122,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
                 emission = chargeRainParticleSystem.emission;
                 emission.enabled = false;
             }
+            rainOverWaterAudio.volume = 0;
         }
     }
 }

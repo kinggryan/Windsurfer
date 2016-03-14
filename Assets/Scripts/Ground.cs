@@ -13,12 +13,28 @@ public class Ground : MonoBehaviour {
 
     public UnityEngine.UI.Text victoryText;
 
+    public PlantGrowthAnimator growthAnimator;
+
     private float rainAmount = 0f;
     private bool forest = false;
     new private Renderer renderer;
 
-	// Use this for initialization
-	void Start () {
+    // Public Methods
+
+    public void RainedOnAtPoint(Vector3 rainPoint, float rainMultiplier)
+    {
+        RainedOnAmount(Time.deltaTime / fullRainTime * rainMultiplier);
+    }
+
+    public void RainedOnBurst(float amountFull)
+    {
+        RainedOnAmount(amountFull * fullRainTime);
+    }
+
+    // Private Methods
+
+    // Use this for initialization
+    void Start () {
         renderer = GetComponent<Renderer>();
         renderer.material.color = rainAmount * forestFadeColor + (1 - rainAmount) * desertColor;
 
@@ -27,41 +43,20 @@ public class Ground : MonoBehaviour {
 
         Object.FindObjectOfType<GroundsRemainingController>().InitGround();
     }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
-    public void RainedOnAtPoint(Vector3 rainPoint,float rainMultiplier)
-    {
-        if (!forest) {
-            rainAmount += Time.deltaTime / fullRainTime;
-            if (rainAmount >= 1.0)
-            {
-                forest = true;
-                renderer.material.color = forestCompleteColor;
-
-                Object.FindObjectOfType<GroundsRemainingController>().GroundRemoved();
-            }
-            else
-            {
-                renderer.material.color = rainAmount * forestFadeColor + (1 - rainAmount) * desertColor;
-            }
-        }
-    }
-
-    public void RainedOnBurst(float amountFull)
+    void RainedOnAmount(float amountRainedOn)
     {
         if (!forest)
         {
-            rainAmount += amountFull * fullRainTime;
+            rainAmount += amountRainedOn;
             if (rainAmount >= 1.0)
             {
                 forest = true;
                 renderer.material.color = forestCompleteColor;
 
                 Object.FindObjectOfType<GroundsRemainingController>().GroundRemoved();
+                if(growthAnimator)
+                    growthAnimator.Grow();
             }
             else
             {

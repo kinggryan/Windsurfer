@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(ScaleAnimator))]
 public class Cloud : MonoBehaviour {
 
     public float rainDrainedOnPlayerHit = 0.34f;
@@ -10,12 +11,13 @@ public class Cloud : MonoBehaviour {
     private float startingScale;
     private bool canHitPlayer = true;
     private float invulnerableTime = 0.5f;
+    private float rotationRate = 25f;
 
 	// Use this for initialization
 	void Start () {
         startingScale = transform.localScale.x;
     }
-	
+    
     public bool HitPlayer()
     {
         if(!canHitPlayer)
@@ -26,11 +28,14 @@ public class Cloud : MonoBehaviour {
         rainMeter -= rainDrainedOnPlayerHit;
         if(rainMeter <= 0)
         {
-            GameObject.Destroy(gameObject);
+            GetComponent<ScaleAnimator>().AnimateToScale(Vector3.zero, true);
+            canHitPlayer = false;
+            return true;
         }
         else
         {
-            transform.localScale = new Vector3((startingScale - minScale) * rainMeter + minScale, transform.localScale.y, (startingScale - minScale) * rainMeter + minScale);
+            Vector3 targetScale = new Vector3((startingScale - minScale) * rainMeter + minScale, transform.localScale.y, (startingScale - minScale) * rainMeter + minScale);
+            GetComponent<ScaleAnimator>().AnimateToScale(targetScale, false);
         }
 
         canHitPlayer = false;
