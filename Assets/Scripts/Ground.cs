@@ -48,6 +48,7 @@ public class Ground : MonoBehaviour {
     {
         if (!forest)
         {
+            Object.FindObjectOfType<GroundsRemainingController>().GroundRainedOn();
             rainAmount += amountRainedOn;
             if (rainAmount >= 1.0)
             {
@@ -55,7 +56,7 @@ public class Ground : MonoBehaviour {
                 renderer.material.color = forestCompleteColor;
 
                 Object.FindObjectOfType<GroundsRemainingController>().GroundRemoved();
-                if(growthAnimator)
+                if (growthAnimator)
                     growthAnimator.Grow();
             }
             else

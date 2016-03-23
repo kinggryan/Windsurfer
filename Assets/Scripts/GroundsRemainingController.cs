@@ -13,18 +13,33 @@ public class GroundsRemainingController : MonoBehaviour {
     public Color allDesertSkyColor;
     public Color levelCompleteColor;
 
+    public AudioSource growthAudioSource;
+
     private int totalGrounds;
     private int groundsNeeded;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    private float targetGrowthAudioSourceVolume;
+    private float rainSoundDecayDelay = 0f;
+
+    // Use this for initialization
+    void Start() {
+        targetGrowthAudioSourceVolume = growthAudioSource.volume;
+        growthAudioSource.volume = 0;
+    }
+
+    // Update is called once per frame
+    void Update() {
+        if (rainSoundDecayDelay > 0)
+            growthAudioSource.volume = Mathf.MoveTowards(growthAudioSource.volume, targetGrowthAudioSourceVolume, 5.0f * Time.deltaTime);
+        else
+            growthAudioSource.volume = Mathf.MoveTowards(growthAudioSource.volume, 0, 5.0f * Time.deltaTime);
+
+        rainSoundDecayDelay -= Time.deltaTime;
+    }
+
+    public void GroundRainedOn() {
+        rainSoundDecayDelay = 0.25f;
+    }
 
     public void GroundRemoved()
     {

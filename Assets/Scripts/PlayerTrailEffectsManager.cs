@@ -19,6 +19,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public ParticleSystem boostRainParticleSystem;
 
     public AudioSource rainOverWaterAudio;
+    public AudioSource boostAudio;
 
     public float rainOverWaterAudioMaxVolume = 0.5f;
 
@@ -26,6 +27,9 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     private float rainMeter;
     private bool charging = false;
     private float chargeRainMultiplier;
+
+    public float rainOverWaterAudioMaxTurnTargetVolume;
+    public float rainOverWaterAudioMinTurnTargetVolume;
 
 	// Use this for initialization
 	void Start () {
@@ -58,6 +62,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
         if(rainMeter > 0)
         {
             boostRainParticleSystem.Play();
+            boostAudio.Play();
         }
     }
 
@@ -107,11 +112,12 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
                 }
                 emission.rate = new ParticleSystem.MinMaxCurve(chargeRainMultiplier * chargeRainEmissionRate);
 
-                rainOverWaterAudio.volume = Mathf.MoveTowards(rainOverWaterAudio.volume,rainOverWaterAudioMaxVolume,Time.deltaTime*5);
+                var rainVolume = chargeRainMultiplier * (rainOverWaterAudioMaxTurnTargetVolume - rainOverWaterAudioMinTurnTargetVolume) + rainOverWaterAudioMinTurnTargetVolume;
+                rainOverWaterAudio.volume = Mathf.MoveTowards(rainOverWaterAudio.volume, rainVolume, Time.deltaTime*5);
             }
             else
             {
-                rainOverWaterAudio.volume = 0;
+                rainOverWaterAudio.volume = Mathf.MoveTowards(rainOverWaterAudio.volume, 0, Time.deltaTime*5);
             }
         }
         else
@@ -122,7 +128,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
                 emission = chargeRainParticleSystem.emission;
                 emission.enabled = false;
             }
-            rainOverWaterAudio.volume = 0;
+            rainOverWaterAudio.volume = Mathf.MoveTowards(rainOverWaterAudio.volume, 0, Time.deltaTime * 5);
         }
     }
 }
