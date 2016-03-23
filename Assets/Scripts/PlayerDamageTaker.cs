@@ -9,6 +9,8 @@ public class PlayerDamageTaker : MonoBehaviour {
 
     public float hitMountainShakeIntensity = 0.5f;
 
+    public AudioSource hitSound;
+
     private PlayerHealth health;
     private bool invincible = false;
 
@@ -34,6 +36,8 @@ public class PlayerDamageTaker : MonoBehaviour {
             shakeDirection.z = 0;
             shakeDirection.Normalize();
             Camera.main.GetComponent<CameraShaker>().ShakeInDirectionWithIntensity(shakeDirection, hitMountainShakeIntensity);
+
+            hitSound.Play();
         }
     }
 
