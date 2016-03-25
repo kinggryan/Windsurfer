@@ -15,9 +15,11 @@ public class Ground : MonoBehaviour {
 
     public PlantGrowthAnimator growthAnimator;
 
+    public new Renderer renderer;
+
     private float rainAmount = 0f;
     private bool forest = false;
-    new private Renderer renderer;
+    
 
     // Public Methods
 
@@ -35,8 +37,8 @@ public class Ground : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        renderer = GetComponent<Renderer>();
-        renderer.material.color = rainAmount * forestFadeColor + (1 - rainAmount) * desertColor;
+       // renderer = GetComponent<Renderer>();
+       // renderer.material.SetFloat("_ForestAmount", rainAmount); // = rainAmount * forestFadeColor + (1 - rainAmount) * desertColor;
 
         transform.rotation = Quaternion.LookRotation(Vector3.Cross(Vector3.up, transform.position.normalized), transform.position.normalized);
         transform.position = groundDistance*transform.position.normalized;
@@ -53,7 +55,7 @@ public class Ground : MonoBehaviour {
             if (rainAmount >= 1.0)
             {
                 forest = true;
-                renderer.material.color = forestCompleteColor;
+                renderer.material.SetFloat("_ForestAmount", rainAmount);
 
                 Object.FindObjectOfType<GroundsRemainingController>().GroundRemoved();
                 if (growthAnimator)
@@ -61,7 +63,7 @@ public class Ground : MonoBehaviour {
             }
             else
             {
-                renderer.material.color = rainAmount * forestFadeColor + (1 - rainAmount) * desertColor;
+                renderer.material.SetFloat("_ForestAmount", rainAmount);
             }
         }
     }

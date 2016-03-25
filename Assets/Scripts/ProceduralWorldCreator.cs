@@ -35,7 +35,8 @@ public class ProceduralWorldCreator : MonoBehaviour {
         {
             // The ground will take care of its own orientation and ensuring its distance is appropriate
             if (numTiles == startingNumTiles) {
-                GameObject.Instantiate(groundPrefab, continentDirection * sphereRadius, Quaternion.identity);
+                Quaternion lookQuat = Quaternion.LookRotation(Vector3.Cross(Vector3.right, spawnDirection), spawnDirection);
+                GameObject.Instantiate(groundPrefab, continentDirection * sphereRadius, lookQuat);
                 numTiles--;
             }
             else
@@ -59,7 +60,8 @@ public class ProceduralWorldCreator : MonoBehaviour {
         int tilesToSpawn = Mathf.Min(layerNumber * 6, numTiles);
         for(int i = 0; i < tilesToSpawn; i++)
         {
-            GameObject.Instantiate(groundPrefab, spawnDirection, Quaternion.identity);
+            Quaternion lookQuat = Quaternion.LookRotation(Vector3.Cross(Vector3.right, spawnDirection), spawnDirection);
+            GameObject.Instantiate(groundPrefab, spawnDirection, lookQuat);
             spawnDirection = Quaternion.AngleAxis(60f, continentDirection) * spawnDirection;
         }
 
