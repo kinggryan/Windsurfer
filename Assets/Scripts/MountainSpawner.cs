@@ -9,6 +9,7 @@ public class MountainSpawner : MonoBehaviour {
     public float mountainStartHeight = 50f;
     public float finalMountainHeight = 75f;
     public float mountainRiseTime = 2f;
+    public float mountainRadius = 15f;
 
     private GameObject currentlySpawningMountain;
 
@@ -40,7 +41,13 @@ public class MountainSpawner : MonoBehaviour {
     public IEnumerator SpawnMountain(float time)
     {
         yield return new WaitForSeconds(time);
-        Vector3 spawnPosition = mountainStartHeight * Random.onUnitSphere;
+        Vector3 spawnDirection = Random.onUnitSphere;
+        while(!MountainCanSpawnInDirection(spawnDirection))
+        {
+            spawnDirection = Random.onUnitSphere;
+        }
+
+        Vector3 spawnPosition = mountainStartHeight * spawnDirection;
         Quaternion spawnRotation = Quaternion.LookRotation(Vector3.Cross(spawnPosition, Vector3.up), spawnPosition.normalized);
         currentlySpawningMountain = (GameObject)GameObject.Instantiate(mountainPrefab, spawnPosition, spawnRotation);
         SurfaceObjectOrienter orienter = currentlySpawningMountain.GetComponent<SurfaceObjectOrienter>();
@@ -49,4 +56,9 @@ public class MountainSpawner : MonoBehaviour {
             Object.Destroy(orienter);
         }
     }
+
+    bool MountainCanSpawnInDirection(Vector3 direction)
+    {
+        return !Physics.CheckCapsule(Vector3.zero, finalMountainHeight*direction, mountainRadius);
+    } 
 }
