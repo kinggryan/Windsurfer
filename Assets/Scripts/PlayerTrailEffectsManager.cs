@@ -31,12 +31,16 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public float rainOverWaterAudioMaxTurnTargetVolume;
     public float rainOverWaterAudioMinTurnTargetVolume;
 
+    public UnityEngine.UI.Image rainLossDamageOverlay;
+    private float rainLossDamageOverlayMaxOpacity;
+
 	// Use this for initialization
 	void Start () {
         trailRenderer = GetComponent<TrailRenderer>();
         ParticleSystem.EmissionModule emission = chargeRainParticleSystem.emission;
         emission.enabled = false;
         rainOverWaterAudio.volume = 0f;
+        rainLossDamageOverlayMaxOpacity = rainLossDamageOverlay.color.a;
     }
 
     // Update is called once per frame
@@ -130,5 +134,13 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
             }
             rainOverWaterAudio.volume = Mathf.MoveTowards(rainOverWaterAudio.volume, 0, Time.deltaTime * 5);
         }
+    }
+
+    public void SetPlayerRainDamagePercent(float rainDamageTimerPercent)
+    {
+        // 1.0 is taking damage, 0 is not at all.
+        Color color = rainLossDamageOverlay.color;
+        color.a = rainDamageTimerPercent * rainLossDamageOverlayMaxOpacity;
+        rainLossDamageOverlay.color = color;
     }
 }

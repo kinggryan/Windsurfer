@@ -13,6 +13,7 @@ public class CloudSpawner : MonoBehaviour {
     public int maxCloudCount = 5;
 
     [Header("Storms")]
+    public bool stormSpawnEnabled = false;
     public float minStormSpawnTime = 30f;
     public float maxStormSpawnTime = 45f;
     public float minStormSpeed = 15;
@@ -28,7 +29,9 @@ public class CloudSpawner : MonoBehaviour {
         }
 
         StartCoroutine(SpawnCloudTimer(Random.Range(minCloudSpawnTime, maxCloudSpawnTime)));
-        StartCoroutine(SpawnStormTimer(Random.Range(minStormSpawnTime, maxStormSpawnTime)));
+
+        if(stormSpawnEnabled)
+            StartCoroutine(SpawnStormTimer(Random.Range(minStormSpawnTime, maxStormSpawnTime)));
     }
 
     // Update is called once per frame

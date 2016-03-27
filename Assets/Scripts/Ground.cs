@@ -60,6 +60,8 @@ public class Ground : MonoBehaviour {
                 Object.FindObjectOfType<GroundsRemainingController>().GroundRemoved();
                 if (growthAnimator)
                     growthAnimator.Grow();
+
+                Object.FindObjectOfType<PlayerMouseController>().ForestCreated();
             }
             else
             {

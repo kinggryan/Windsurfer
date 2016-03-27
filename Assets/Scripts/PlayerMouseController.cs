@@ -31,10 +31,12 @@ public class PlayerMouseController : MonoBehaviour {
     public float rainFromBoostDistance = 15f;
     public float rainFromBoostSpreadDegrees = 30f;
     public float rainMeterGainPerCloud = 0.25f;
+    public float rainMeterGainPerForestGrowth = 0.1f;
     public float rainMeterLossPerSecond = 0.25f;
     // The following two properties are not currently used.
     public float rainMeterLossPerSecondCharging = 0.2f;
     public float rainMeterLossPerBoost = 0.33f;
+    public float rainlessDamageTime = 4f;
 
     [Header("Game Object References")]
     public GameObject directionIndicator;
@@ -48,7 +50,8 @@ public class PlayerMouseController : MonoBehaviour {
     private float boostTurnAmount;
     private PlayerTrailEffectsManager trailEffectsManager;
     private PlayerUI ui;
-    private float rainMeterAmount = 0f;
+    private float rainMeterAmount = 1f;
+    private float rainlessDamageTimer = 0f;
 
     // Public Methods
     public void ChargeRainMeter(float amount)
@@ -66,7 +69,29 @@ public class PlayerMouseController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         // Cause rain loss
+        bool rainMeterWasAboveZero = rainMeterAmount > 0;
         rainMeterAmount = Mathf.Max(0, rainMeterAmount - Time.deltaTime * rainMeterLossPerSecond);
+        if(rainMeterAmount == 0)
+        {
+            if(rainMeterWasAboveZero)
+            {
+                rainlessDamageTimer = rainlessDamageTime;
+            }
+            else
+            {
+                rainlessDamageTimer -= Time.deltaTime;
+                if(rainlessDamageTimer <= 0)
+                {
+                    Object.FindObjectOfType<PlayerDamageTaker>().TakeDamage(transform.position + Vector3.right);
+                    rainlessDamageTimer += rainlessDamageTime;
+                }
+            }
+            trailEffectsManager.SetPlayerRainDamagePercent(1 - (rainlessDamageTimer / rainlessDamageTime));
+        }
+        else
+        {
+            trailEffectsManager.SetPlayerRainDamagePercent(0);
+        }
 
         // Update Effects while boosting
         if(Input.GetButtonDown("Boost"))
@@ -282,5 +307,10 @@ public class PlayerMouseController : MonoBehaviour {
         {
             rainMeterAmount = Mathf.Min(1, rainMeterAmount + rainMeterGainPerCloud);
         }
+    }
+
+    public void ForestCreated()
+    {
+        rainMeterAmount = Mathf.Min(1f, rainMeterAmount + rainMeterGainPerForestGrowth);
     }
 }

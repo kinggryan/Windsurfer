@@ -28,17 +28,22 @@ public class PlayerDamageTaker : MonoBehaviour {
     {
         if (collider.GetComponent<PlayerObstacle>() && !invincible)
         {
-            health.TakeDamage(damageTakenOnHit);
-            StartCoroutine(BecomeInvincible(invincibilityTime));
-
-            // Shake camera
-            Vector3 shakeDirection = Camera.main.transform.InverseTransformDirection(transform.position - collider.transform.position);
-            shakeDirection.z = 0;
-            shakeDirection.Normalize();
-            Camera.main.GetComponent<CameraShaker>().ShakeInDirectionWithIntensity(shakeDirection, hitMountainShakeIntensity);
-
-            hitSound.Play();
+            TakeDamage(collider.transform.position);
         }
+    }
+
+    public void TakeDamage(Vector3 damageOrigin)
+    {
+        health.TakeDamage(damageTakenOnHit);
+        StartCoroutine(BecomeInvincible(invincibilityTime));
+
+        // Shake camera
+        Vector3 shakeDirection = Camera.main.transform.InverseTransformDirection(transform.position - damageOrigin);
+        shakeDirection.z = 0;
+        shakeDirection.Normalize();
+        Camera.main.GetComponent<CameraShaker>().ShakeInDirectionWithIntensity(shakeDirection, hitMountainShakeIntensity);
+
+        hitSound.Play();
     }
 
     public IEnumerator BecomeInvincible(float time)
