@@ -102,8 +102,13 @@ public class PlayerMouseController : MonoBehaviour {
         // Slow down and charge
         if (Input.GetButton("Boost"))
         {
+            bool previouslyCharged = speedCharge >= maxChargeTime;
             speedCharge += Time.deltaTime;
             RainFromCharge(rainFromChargeDistance, playerRainRadius);
+            if(!previouslyCharged && speedCharge >= maxChargeTime)
+            {
+                trailEffectsManager.BoostReady();
+            }
         }
 
         // return to glide
@@ -148,7 +153,7 @@ public class PlayerMouseController : MonoBehaviour {
         // Boost
         if(Input.GetButtonUp("Boost"))
         {
-            if (speedCharge >= minChargeTime)
+            if (speedCharge >= maxChargeTime)
             {
                 Quaternion boostDirectionTurn = Quaternion.AngleAxis(boostTurnAmount, transform.position);
 

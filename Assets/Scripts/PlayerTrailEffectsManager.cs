@@ -5,6 +5,8 @@ using System.Collections;
 [RequireComponent(typeof(AudioSource))]
 public class PlayerTrailEffectsManager : MonoBehaviour {
 
+    public Renderer playerRenderer;
+
     public float maxSpeedCameraDistance = 30f;
     public float minSpeedCameraDistance = 20f;
     public float maxSpeedFOV = 60f;
@@ -33,6 +35,10 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 
     public UnityEngine.UI.Image rainLossDamageOverlay;
     private float rainLossDamageOverlayMaxOpacity;
+
+    public Color boostFlickerColor;
+    public float boostFlickerDuration;
+    public float boostFlickerPeriod;
 
 	// Use this for initialization
 	void Start () {
@@ -134,6 +140,30 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
             }
             rainOverWaterAudio.volume = Mathf.MoveTowards(rainOverWaterAudio.volume, 0, Time.deltaTime * 5);
         }
+    }
+
+    public void BoostReady()
+    {
+        StartCoroutine(FlickerBoostColor(boostFlickerDuration));
+        Debug.Log("Boost ready" + Time.time);
+    }
+
+    public IEnumerator FlickerBoostColor(float totalTimeLeft)
+    {
+        yield return new WaitForSeconds(boostFlickerPeriod);
+
+        Color currentColor = playerRenderer.material.color;
+        if(currentColor == boostFlickerColor || totalTimeLeft <= 0)
+        {
+            playerRenderer.material.color = Color.white;
+        }
+        else
+        {
+            playerRenderer.material.color = boostFlickerColor;
+        }
+
+        if(totalTimeLeft > 0)
+            StartCoroutine(FlickerBoostColor(totalTimeLeft - boostFlickerPeriod));
     }
 
     public void SetPlayerRainDamagePercent(float rainDamageTimerPercent)
