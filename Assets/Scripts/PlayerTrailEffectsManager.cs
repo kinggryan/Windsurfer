@@ -7,11 +7,19 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 
     public Renderer playerRenderer;
 
+    [Header("Camera Speed Parameters")]
     public float maxSpeedCameraDistance = 30f;
     public float minSpeedCameraDistance = 20f;
     public float maxSpeedFOV = 60f;
     public float minSpeedFOV = 50f;
 
+    [Header("Animations")]
+    public GameObject playerModel;
+    public float playerMaxTurnRate;
+    public float maxTurnTiltAngle = 30f;
+    private Vector3 previousSphericalMovementVector;
+
+    [Header("Rain Effects")]
     public AnimationCurve rainEmissionCurve;
     public float chargeRainEmissionRate;
 
@@ -20,6 +28,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public ParticleSystem chargeRainParticleSystem;
     public ParticleSystem boostRainParticleSystem;
 
+    [Header("Audio")]
     public AudioSource rainOverWaterAudio;
     public AudioSource boostAudio;
 
@@ -33,9 +42,11 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public float rainOverWaterAudioMaxTurnTargetVolume;
     public float rainOverWaterAudioMinTurnTargetVolume;
 
+    [Header("UI")]
     public UnityEngine.UI.Image rainLossDamageOverlay;
     private float rainLossDamageOverlayMaxOpacity;
 
+    [Header("Boost Flicker")]
     public Color boostFlickerColor;
     public float boostFlickerDuration;
     public float boostFlickerPeriod;
@@ -89,6 +100,14 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public void UpdateMovement(Vector3 playerSphericalMotionVector,Vector3 playerLookDirection,float playerMaxTurnDirection)
     {
         chargeRainMultiplier = Vector3.Angle(playerSphericalMotionVector, playerLookDirection) / playerMaxTurnDirection;
+
+        float sign = Vector3.Angle(Vector3.Cross(playerSphericalMotionVector, transform.position), previousSphericalMovementVector) <= 90 ? -1 : 1;
+        float turnRate = Vector3.Angle(playerSphericalMotionVector, previousSphericalMovementVector) / Time.deltaTime;
+        Vector3 newEulerAngles = playerModel.transform.localEulerAngles;
+        newEulerAngles.y = 90 + sign * turnRate / playerMaxTurnRate * maxTurnTiltAngle;
+        playerModel.transform.localEulerAngles = newEulerAngles;
+
+        previousSphericalMovementVector = playerSphericalMotionVector;
    /*     float sign = Vector3.Angle(Vector3.Cross(playerSphericalMotionVector, transform.position), playerLookDirection) <= 90 ? -1 : 1;
         ParticleSystem.VelocityOverLifetimeModule vm = chargeRainParticleSystem.velocityOverLifetime;
         float min = Mathf.Min(sign * Vector3.Angle(playerSphericalMotionVector, playerLookDirection),0);
