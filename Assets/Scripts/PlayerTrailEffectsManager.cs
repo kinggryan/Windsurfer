@@ -18,6 +18,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public float playerMaxTurnRate;
     public float maxTurnTiltAngle = 30f;
     private Vector3 previousSphericalMovementVector;
+    private float previousTurnRate;
 
     [Header("Rain Effects")]
     public AnimationCurve rainEmissionCurve;
@@ -103,11 +104,21 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 
         float sign = Vector3.Angle(Vector3.Cross(playerSphericalMotionVector, transform.position), previousSphericalMovementVector) <= 90 ? -1 : 1;
         float turnRate = Vector3.Angle(playerSphericalMotionVector, previousSphericalMovementVector) / Time.deltaTime;
+
+        // Debug.Log(Vector3.Angle(playerSphericalMotionVector, previousSphericalMovementVector));
+        //Debug.Log(playerSphericalMotionVector);
+        float visibleTurnRate = Mathf.Lerp(previousTurnRate, turnRate, 0.5f);
+        visibleTurnRate = Mathf.MoveTowards(visibleTurnRate, 0, 15);
+        visibleTurnRate *= 1.5f;
+       // Debug.Log(visibleTurnRate);
+      // Debug.Log((playerSphericalMotionVector - previousSphericalMovementVector).magnitude);
+
         Vector3 newEulerAngles = playerModel.transform.localEulerAngles;
-        newEulerAngles.y = 90 + sign * turnRate / playerMaxTurnRate * maxTurnTiltAngle;
+        newEulerAngles.y = 90 + sign * visibleTurnRate / playerMaxTurnRate * maxTurnTiltAngle;
         playerModel.transform.localEulerAngles = newEulerAngles;
 
         previousSphericalMovementVector = playerSphericalMotionVector;
+        previousTurnRate = turnRate;
    /*     float sign = Vector3.Angle(Vector3.Cross(playerSphericalMotionVector, transform.position), playerLookDirection) <= 90 ? -1 : 1;
         ParticleSystem.VelocityOverLifetimeModule vm = chargeRainParticleSystem.velocityOverLifetime;
         float min = Mathf.Min(sign * Vector3.Angle(playerSphericalMotionVector, playerLookDirection),0);
@@ -178,7 +189,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
         }
         else
         {
-            playerRenderer.material.color = boostFlickerColor;
+            playerRenderer.material.color = Color.white; //boostFlickerColor;
         }
 
         if(totalTimeLeft > 0)
