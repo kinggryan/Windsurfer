@@ -175,7 +175,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public void BoostReady()
     {
         StartCoroutine(FlickerBoostColor(boostFlickerDuration));
-        Debug.Log("Boost ready" + Time.time);
+    //    Debug.Log("Boost ready" + Time.time);
     }
 
     public IEnumerator FlickerBoostColor(float totalTimeLeft)

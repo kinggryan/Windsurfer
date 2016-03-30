@@ -10,8 +10,11 @@ public class GroundsRemainingController : MonoBehaviour {
     public UnityEngine.UI.Text groundsLeftText;
     public GameObject[] buttonsToEnableOnVictory;
 
-    public Color allDesertSkyColor;
-    public Color levelCompleteColor;
+    //  public Color allDesertSkyColor;
+    //  public Color levelCompleteColor;
+    public AnimationCurve atmosphereSizeCurve;
+    public Gradient atmosphereGradient;
+    public Material planetAtmosphereMat;
 
     public AudioSource growthAudioSource;
 
@@ -62,7 +65,9 @@ public class GroundsRemainingController : MonoBehaviour {
 
         groundsLeftText.text = "" + groundsNeeded;
         float percentComplete = 1 - 1.0f * groundsNeeded / Mathf.FloorToInt(totalGrounds * percentGroundsNeeded);
-        Camera.main.backgroundColor = percentComplete * levelCompleteColor + (1 - percentComplete) * allDesertSkyColor;
+        //  Camera.main.backgroundColor = percentComplete * levelCompleteColor + (1 - percentComplete) * allDesertSkyColor;
+        planetAtmosphereMat.SetColor("_AtmoColor", atmosphereGradient.Evaluate(percentComplete));
+        planetAtmosphereMat.SetFloat("_Size", atmosphereSizeCurve.Evaluate(percentComplete));
 
         ScreenFlash sFlash = Object.FindObjectOfType<ScreenFlash>();
         if (sFlash)
@@ -74,6 +79,8 @@ public class GroundsRemainingController : MonoBehaviour {
         totalGrounds++;
         groundsNeeded = Mathf.FloorToInt(totalGrounds * percentGroundsNeeded);
         groundsLeftText.text = "" + groundsNeeded;
-        Camera.main.backgroundColor = allDesertSkyColor;
+        //    Camera.main.backgroundColor = allDesertSkyColor;
+        planetAtmosphereMat.SetColor("_AtmoColor", atmosphereGradient.Evaluate(0));
+        planetAtmosphereMat.SetFloat("_Size", atmosphereSizeCurve.Evaluate(0));
     }
 }
