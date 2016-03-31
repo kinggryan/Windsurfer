@@ -30,6 +30,7 @@ public class PlayerMouseController : MonoBehaviour {
     public float rainFromChargeDistance = 15f;
     public float rainFromBoostDistance = 15f;
     public float rainFromBoostSpreadDegrees = 30f;
+    public float rainFromBoostAmount = 0.75f;
     public float rainMeterGainPerCloud = 0.25f;
     public float rainMeterGainPerForestGrowth = 0.1f;
     public float rainMeterLossPerSecond = 0.25f;
@@ -299,7 +300,7 @@ public class PlayerMouseController : MonoBehaviour {
                 Ground ground = col.GetComponent<Ground>();
                 if (ground)
                 {
-                    ground.RainedOnBurst(0.75f);
+                    ground.RainedOnBurst(rainFromBoostAmount);
                 }
             }
         }
