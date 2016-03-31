@@ -6,9 +6,7 @@ public class GroundsRemainingController : MonoBehaviour {
 
     public float percentGroundsNeeded = 1.0f;
 
-    public UnityEngine.UI.Text victoryText;
     public UnityEngine.UI.Text groundsLeftText;
-    public GameObject[] buttonsToEnableOnVictory;
 
     //  public Color allDesertSkyColor;
     //  public Color levelCompleteColor;
@@ -48,19 +46,7 @@ public class GroundsRemainingController : MonoBehaviour {
     {
         if(--groundsNeeded <= 0)
         {
-            victoryText.enabled = true;
-            foreach(GameObject obj in buttonsToEnableOnVictory)
-            {
-                List<MonoBehaviour> components = new List<MonoBehaviour>();
-                components.AddRange(obj.GetComponentsInChildren<UnityEngine.UI.Text>());
-                components.AddRange(obj.GetComponents<UnityEngine.UI.Image>());
-                components.AddRange(obj.GetComponents<UnityEngine.UI.Button>());
-
-                foreach (MonoBehaviour mb in components)
-                {
-                    mb.enabled = true;
-                }
-            }
+            GetComponent<UIController>().LevelComplete();
         }
 
         groundsLeftText.text = "" + groundsNeeded;

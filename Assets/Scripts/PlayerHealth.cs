@@ -18,6 +18,7 @@ public class PlayerHealth : MonoBehaviour {
         if(currentHealth <= 0)
         {
             // Lose
+            LevelDifficultyManager.LevelLost();
             Application.LoadLevel(Application.loadedLevel);
         }
 

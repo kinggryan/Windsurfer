@@ -1,10 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class UIController : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+    public UnityEngine.UI.Text victoryText;
+
+    public GameObject nextLevelButton;
+    public GameObject quitButton;
+
+    // Use this for initialization
+    void Start () {
 	
 	}
 	
@@ -15,11 +21,46 @@ public class UIController : MonoBehaviour {
 
     public void NextLevel()
     {
-        Application.LoadLevel(Application.loadedLevel);
+        if (LevelDifficultyManager.GameComplete()) {
+            victoryText.text = "You Win!";
+            victoryText.enabled = true;
+        }
+        else
+            Application.LoadLevel(Application.loadedLevel);
     }
 
     public void Quit()
     {
         Application.Quit();
+    }
+
+    public void LevelComplete()
+    {
+        LevelDifficultyManager.LevelComplete();
+
+        victoryText.enabled = true;
+
+        GameObject[] buttonsToEnableOnVictory = { quitButton };
+        if(!LevelDifficultyManager.GameComplete())
+        {
+            buttonsToEnableOnVictory = new GameObject[2] { quitButton, nextLevelButton };
+        }
+        else
+        {
+            victoryText.text = "You won the game!";
+        }
+
+        foreach (GameObject obj in buttonsToEnableOnVictory)
+        {
+            List<MonoBehaviour> components = new List<MonoBehaviour>();
+            components.AddRange(obj.GetComponentsInChildren<UnityEngine.UI.Text>());
+            components.AddRange(obj.GetComponents<UnityEngine.UI.Image>());
+            components.AddRange(obj.GetComponents<UnityEngine.UI.Button>());
+
+            foreach (MonoBehaviour mb in components)
+            {
+                mb.enabled = true;
+            }
+        }
     }
 }
