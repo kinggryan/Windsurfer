@@ -30,7 +30,8 @@ public class Ground : MonoBehaviour {
 
     public void RainedOnBurst(float amountFull)
     {
-        RainedOnAmount(amountFull * fullRainTime);
+        Debug.Log("Rained on burst " + amountFull);     
+        RainedOnAmount(amountFull);
     }
 
     // Private Methods
@@ -54,6 +55,7 @@ public class Ground : MonoBehaviour {
             rainAmount += amountRainedOn;
             if (rainAmount >= 1.0)
             {
+                rainAmount = 1;
                 forest = true;
                 renderer.material.SetFloat("_ForestAmount", rainAmount);
 
