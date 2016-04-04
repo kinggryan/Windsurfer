@@ -25,6 +25,7 @@ public class Ground : MonoBehaviour {
 
     public void RainedOnAtPoint(Vector3 rainPoint, float rainMultiplier)
     {
+        Debug.Log("Rained on " + rainMultiplier);
         RainedOnAmount(Time.deltaTime / fullRainTime * rainMultiplier);
     }
 

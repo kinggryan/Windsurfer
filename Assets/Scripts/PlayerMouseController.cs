@@ -65,6 +65,7 @@ public class PlayerMouseController : MonoBehaviour {
     {
         trailEffectsManager = GetComponent<PlayerTrailEffectsManager>();
         ui = GetComponent<PlayerUI>();
+        trailEffectsManager.StartCharging();
     }
 
 	// Update is called once per frame
@@ -97,16 +98,18 @@ public class PlayerMouseController : MonoBehaviour {
         // Update Effects while boosting
         if(Input.GetButtonDown("Boost"))
         {
-            trailEffectsManager.StartCharging();
+    //        trailEffectsManager.StartCharging();
         }
+
+        RainFromCharge(rainFromChargeDistance, playerRainRadius);
 
         // Slow down and charge
         if (Input.GetButton("Boost"))
         {
             bool previouslyCharged = speedCharge >= maxChargeTime;
             speedCharge += Time.deltaTime;
-            RainFromCharge(rainFromChargeDistance, playerRainRadius);
-            if(!previouslyCharged && speedCharge >= maxChargeTime)
+        //    RainFromCharge(rainFromChargeDistance, playerRainRadius);
+            if (!previouslyCharged && speedCharge >= maxChargeTime)
             {
                 trailEffectsManager.BoostReady();
             }
@@ -140,7 +143,7 @@ public class PlayerMouseController : MonoBehaviour {
 
         // Steer and brake
         Steer( inputDirection, movementDirectionScreenSpace, Input.GetButton("Boost"));
-        Brake();
+      //  Brake();
 
         // Push to above min speed
         if(sphericalMovementVector.magnitude < minSpeed)
@@ -166,7 +169,7 @@ public class PlayerMouseController : MonoBehaviour {
                 }
             }
             speedCharge = 0f;
-            trailEffectsManager.StopCharging();
+       //     trailEffectsManager.StopCharging();
             RainFromBoost(rainFromBoostDistance, playerRainRadius, rainFromBoostSpreadDegrees);
         }
 
@@ -248,7 +251,7 @@ public class PlayerMouseController : MonoBehaviour {
         if (rainMeterAmount > 0)
         {
             // Scale rain based off of how sharply you are turning.
-            float rainMultiplier = Mathf.Abs(boostTurnAmount / maxChargeDirectionAngle);
+            float rainMultiplier = 1; //Mathf.Abs(boostTurnAmount / maxChargeDirectionAngle);
            // rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerSecondCharging*Time.deltaTime);
             foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, transform.position + -chargeRainDistance * directionIndicator.transform.forward, rainRadius, -transform.position.normalized, 0.5f * transform.position.magnitude))
             {
