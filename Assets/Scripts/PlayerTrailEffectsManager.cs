@@ -28,6 +28,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public ParticleSystem rainParticleSystem;
     public ParticleSystem chargeRainParticleSystem;
     public ParticleSystem boostRainParticleSystem;
+    public ParticleSystem chargingBoostParticleSystem;
 
     [Header("Audio")]
     public AudioSource rainOverWaterAudio;
@@ -73,6 +74,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
         {
             ParticleSystem.EmissionModule emission = chargeRainParticleSystem.emission;
             emission.enabled = true;
+            chargingBoostParticleSystem.Play();
         }
     }
 
@@ -86,6 +88,8 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
             boostRainParticleSystem.Play();
             boostAudio.Play();
         }
+
+        chargingBoostParticleSystem.Stop();
     }
 
     public void StartBraking()
