@@ -3,12 +3,14 @@ using System.Collections;
 
 public class PlantGrowthAnimator : MonoBehaviour {
 
+    public ParticleSystem hexagonParticles;
     public AnimationCurve xzScaleCurve;
     public AnimationCurve yScaleCurve;
     public float scaleMultiplier;
 
     private bool animating = false;
     private float animationTime = 0f;
+    private Color startAnimationColor;
 
 	// Use this for initialization
 	void Start () {
@@ -34,5 +36,15 @@ public class PlantGrowthAnimator : MonoBehaviour {
     public void Grow()
     {
         animating = true;
+        hexagonParticles.Play();
+     //   StartCoroutine(FreezeScreen(0.1f));
+    }
+
+    public IEnumerator FreezeScreen(float seconds)
+    {
+        float slowedTimeScale = 0.1f;
+        Time.timeScale = slowedTimeScale;
+        yield return new WaitForSeconds(seconds*slowedTimeScale);
+        Time.timeScale = 1.0f;
     }
 }

@@ -15,7 +15,8 @@
 
 	half4 LightingCelShadingForward(SurfaceOutput s, half3 lightDir, half atten) {
 		half NdotL = dot(s.Normal, lightDir);
-		if (NdotL <= 0.0) NdotL = 0;
+		if (NdotL <= 0) NdotL = 0;
+		else if (NdotL <= 0) NdotL = 0.1;
 		else if (NdotL <= 0.25) NdotL = 0.25;
 		else if (NdotL <= 0.5) NdotL = 0.5;
 		else NdotL = 1;
