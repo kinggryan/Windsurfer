@@ -86,7 +86,7 @@ public class PlayerMouseController : MonoBehaviour {
                 rainlessDamageTimer -= Time.deltaTime;
                 if(rainlessDamageTimer <= 0)
                 {
-                    Object.FindObjectOfType<PlayerDamageTaker>().TakeDamage(transform.position + Vector3.right);
+                    Object.FindObjectOfType<PlayerDamageTaker>().RainRanOut(); //.TakeDamage(transform.position + Vector3.right);
                     rainlessDamageTimer += rainlessDamageTime;
                 }
             }
@@ -325,5 +325,11 @@ public class PlayerMouseController : MonoBehaviour {
     public void ForestCreated()
     {
         rainMeterAmount = Mathf.Min(1f, rainMeterAmount + rainMeterGainPerForestGrowth);
+    }
+
+    public void TakeDamageAndLoseRain()
+    {
+        rainMeterAmount = 0;
+        rainlessDamageTimer = rainlessDamageTime;
     }
 }

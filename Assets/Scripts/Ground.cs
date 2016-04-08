@@ -25,13 +25,11 @@ public class Ground : MonoBehaviour {
 
     public void RainedOnAtPoint(Vector3 rainPoint, float rainMultiplier)
     {
-        Debug.Log("Rained on " + rainMultiplier);
         RainedOnAmount(Time.deltaTime / fullRainTime * rainMultiplier);
     }
 
     public void RainedOnBurst(float amountFull)
     {
-        Debug.Log("Rained on burst " + amountFull);     
         RainedOnAmount(amountFull);
     }
 

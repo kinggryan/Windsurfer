@@ -12,12 +12,15 @@ public class PlayerDamageTaker : MonoBehaviour {
     public AudioSource hitSound;
 
     private PlayerHealth health;
+    private PlayerMouseController controller;
     private bool invincible = false;
 
 	// Use this for initialization
 	void Start () {
         health = GetComponent<PlayerHealth>();
-	}
+        controller = GetComponent<PlayerMouseController>();
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -32,9 +35,15 @@ public class PlayerDamageTaker : MonoBehaviour {
         }
     }
 
+    public void RainRanOut()
+    {
+        health.TakeDamage(1);
+    }
+
     public void TakeDamage(Vector3 damageOrigin)
     {
-        health.TakeDamage(damageTakenOnHit);
+        //   health.TakeDamage(damageTakenOnHit);
+        controller.TakeDamageAndLoseRain();
         StartCoroutine(BecomeInvincible(invincibilityTime));
 
         // Shake camera
