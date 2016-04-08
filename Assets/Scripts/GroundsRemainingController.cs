@@ -15,6 +15,9 @@ public class GroundsRemainingController : MonoBehaviour {
     public Material planetAtmosphereMat;
 
     public AudioSource growthAudioSource;
+    public float growthAudioSourceMaxVolumeTime;
+    public float growthAudioSourceSilenceTime;
+    public float growthAudioSourceDecayTime;
 
     private int totalGrounds;
     private int groundsNeeded;
@@ -31,15 +34,15 @@ public class GroundsRemainingController : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if (rainSoundDecayDelay > 0)
-            growthAudioSource.volume = Mathf.MoveTowards(growthAudioSource.volume, targetGrowthAudioSourceVolume, 5.0f * Time.deltaTime);
+            growthAudioSource.volume = Mathf.MoveTowards(growthAudioSource.volume, targetGrowthAudioSourceVolume, Time.deltaTime / growthAudioSourceMaxVolumeTime);
         else
-            growthAudioSource.volume = Mathf.MoveTowards(growthAudioSource.volume, 0, 5.0f * Time.deltaTime);
+            growthAudioSource.volume = Mathf.MoveTowards(growthAudioSource.volume, 0, Time.deltaTime / growthAudioSourceSilenceTime);
 
         rainSoundDecayDelay -= Time.deltaTime;
     }
 
     public void GroundRainedOn() {
-        rainSoundDecayDelay = 0.25f;
+        rainSoundDecayDelay = growthAudioSourceDecayTime;
     }
 
     public void GroundRemoved()
