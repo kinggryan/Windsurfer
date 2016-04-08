@@ -17,8 +17,15 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public GameObject playerModel;
     public float playerMaxTurnRate;
     public float maxTurnTiltAngle = 30f;
+    public Gradient playerDriftingGradient;
+    public Gradient chargeLoopGradient;
+    public float playerDriftingGradientDuration;
+    public float chargeLoopGradientDuration;
     private Vector3 previousSphericalMovementVector;
     private float previousTurnRate;
+    private Color normalPlayerColor;
+    private float playerDriftingColorChangeTime;
+    private float playerChargeLoopColorChangeTime;
 
     [Header("Rain Effects")]
     public AnimationCurve rainEmissionCurve;
@@ -60,11 +67,42 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
         emission.enabled = false;
         rainOverWaterAudio.volume = 0f;
         rainLossDamageOverlayMaxOpacity = rainLossDamageOverlay.color.a;
+        normalPlayerColor = playerModel.GetComponent<Renderer>().material.color;
+        playerDriftingColorChangeTime = 0;
+        playerChargeLoopColorChangeTime = 0;
     }
 
     // Update is called once per frame
     void Update () {
         rainParticleSystem.transform.Rotate(transform.up,90f*Time.deltaTime);
+        if(playerDriftingColorChangeTime > 0)
+        {
+            playerDriftingColorChangeTime -= Time.deltaTime;
+            Color color = playerDriftingColorChangeTime > 0 ? playerDriftingGradient.Evaluate(1 - (playerDriftingColorChangeTime / playerDriftingGradientDuration)) : normalPlayerColor;
+            playerModel.GetComponent<Renderer>().material.color = color;
+            if(playerDriftingColorChangeTime <= 0)
+            {
+                playerChargeLoopColorChangeTime = chargeLoopGradientDuration;
+            }
+        }
+        else if(playerChargeLoopColorChangeTime > 0)
+        {
+            playerChargeLoopColorChangeTime -= Time.deltaTime;
+            if (charging)
+            {
+                // If charging, loop and set the color
+                if (playerChargeLoopColorChangeTime < 0)
+                    playerChargeLoopColorChangeTime += chargeLoopGradientDuration;
+                Color color = chargeLoopGradient.Evaluate(1 - (playerChargeLoopColorChangeTime / chargeLoopGradientDuration));
+                playerModel.GetComponent<Renderer>().material.color = color;
+            }
+            else
+            {
+                // If not charging, fade back to normal player color.
+                playerChargeLoopColorChangeTime = 0f;
+                playerModel.GetComponent<Renderer>().material.color = normalPlayerColor;
+            }
+        }
 	}
 
     public void StartCharging()
@@ -76,6 +114,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
             emission.enabled = true;
             chargingBoostParticleSystem.Play();
         }
+        playerDriftingColorChangeTime = playerDriftingGradientDuration;
     }
 
     public void StopCharging()
