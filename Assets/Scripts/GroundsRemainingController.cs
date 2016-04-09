@@ -49,7 +49,7 @@ public class GroundsRemainingController : MonoBehaviour {
     {
         if(--groundsNeeded <= 0)
         {
-            GetComponent<UIController>().LevelComplete();
+            GetComponent<LevelManager>().LevelComplete();
         }
 
         groundsLeftText.text = "" + groundsNeeded;

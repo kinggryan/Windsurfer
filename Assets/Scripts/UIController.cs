@@ -22,11 +22,16 @@ public class UIController : MonoBehaviour {
     public void NextLevel()
     {
         if (LevelDifficultyManager.GameComplete()) {
-            victoryText.text = "You Win!";
-            victoryText.enabled = true;
+            GameComplete();
         }
         else
             Application.LoadLevel(Application.loadedLevel);
+    }
+
+    public void GameComplete()
+    {
+        victoryText.text = "You Win!";
+        victoryText.enabled = true;
     }
 
     public void Quit()
