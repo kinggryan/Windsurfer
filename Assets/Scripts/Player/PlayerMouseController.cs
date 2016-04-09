@@ -17,6 +17,8 @@ public class PlayerMouseController : MonoBehaviour {
     public float minGlideSpeed = 15f;
     public float returnToGlideRate = 5f;
     public Vector3 sphericalMovementVector;
+    public float chargingRumbleIntensity;
+    public float boostCameraShakeIntensity;
 
     [Header("Steering Properties")]
     public float maxTurnSpeed;
@@ -116,6 +118,7 @@ public class PlayerMouseController : MonoBehaviour {
             {
                 trailEffectsManager.BoostReady();
             }
+      //      Object.FindObjectOfType<CameraShaker>().ShakeInDirectionWithIntensity(Vector3.up, chargingRumbleIntensity, CameraShaker.ShakeType.Rumble);
         }
 
         // return to glide
@@ -171,6 +174,12 @@ public class PlayerMouseController : MonoBehaviour {
                 {
                     sphericalMovementVector = sphericalMovementVector.normalized * maxSpeed;
                 }
+
+                // Shake camera
+                Vector3 shakeDirection = Camera.main.transform.InverseTransformDirection(Vector3.Cross(sphericalMovementVector, transform.position));
+                shakeDirection.z = 0;
+                shakeDirection.Normalize();
+                Camera.main.GetComponent<CameraShaker>().ShakeInDirectionWithIntensity(shakeDirection, boostCameraShakeIntensity, CameraShaker.ShakeType.Smooth);
             }
             speedCharge = 0f;
             trailEffectsManager.StopCharging();

@@ -29,10 +29,7 @@ public class PlayerHealth : MonoBehaviour {
             return;
 
         // Shake camera
-        Vector3 shakeDirection = Vector3.up;
-        shakeDirection.z = 0;
-        shakeDirection.Normalize();
-        Camera.main.GetComponent<CameraShaker>().ShakeInDirectionWithIntensity(shakeDirection, deathShakeIntensity);
+        Camera.main.GetComponent<CameraShaker>().ShakeInDirectionWithIntensity(Vector3.up, deathShakeIntensity);
 
         currentHealth -= damageTaken;
         if(currentHealth <= 0)
@@ -73,10 +70,7 @@ public class PlayerHealth : MonoBehaviour {
             playerHitGround = true;
             Camera.main.transform.parent = null;
             // Shake camera
-            Vector3 shakeDirection = Vector3.up;
-            shakeDirection.z = 0;
-            shakeDirection.Normalize();
-            Camera.main.GetComponent<CameraShaker>().ShakeInDirectionWithIntensity(shakeDirection, deathShakeIntensity);
+            Camera.main.GetComponent<CameraShaker>().ShakeInDirectionWithIntensity(Vector3.up, deathShakeIntensity);
             foreach (MonoBehaviour sc in componentsToEnableOnHitGround)
             {
                 sc.enabled = true;

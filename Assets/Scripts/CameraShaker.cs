@@ -3,9 +3,14 @@ using System.Collections;
 
 public class CameraShaker : MonoBehaviour
 {
+    public enum ShakeType { Default, Smooth, Rumble };
+
     private float duration = .45f;
     public AnimationCurve shakeCurve;
+    public AnimationCurve smoothShakeCurve;
+    public AnimationCurve rumbleShakeCurve;
     private Vector3 shakeDirection;
+    private ShakeType shakeType;
 
     private float animationTime = 0f;
     private Vector3 startPosition;
@@ -20,7 +25,14 @@ public class CameraShaker : MonoBehaviour
         if (shaking)
         {
             animationTime += Time.deltaTime;
-            transform.localPosition = originalPosition + shakeCurve.Evaluate(animationTime / duration) * intensity * shakeDirection;
+            AnimationCurve curveToUse = shakeCurve;
+            switch(shakeType)
+            {
+                case ShakeType.Smooth: curveToUse = smoothShakeCurve; break;
+                case ShakeType.Rumble: curveToUse = rumbleShakeCurve; break;
+                default: break;
+            }
+            transform.localPosition = originalPosition + curveToUse.Evaluate(animationTime / duration) * intensity * shakeDirection;
         }
     }
 
@@ -30,9 +42,13 @@ public class CameraShaker : MonoBehaviour
         shaking = false;
     }
 
-    public void ShakeInDirectionWithIntensity(Vector3 direction, float intensity)
+    public void ShakeInDirectionWithIntensity(Vector3 direction, float intensity, ShakeType type = ShakeType.Default)
     {
+        if (shaking && type == shakeType && type == ShakeType.Rumble)
+            return;
+
         shaking = true;
+        shakeType = type;
         shakeDirection = direction;
         animationTime = 0f;
         this.intensity = intensity;
