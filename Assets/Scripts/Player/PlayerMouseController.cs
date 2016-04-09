@@ -87,7 +87,7 @@ public class PlayerMouseController : MonoBehaviour {
                 if(rainlessDamageTimer <= 0)
                 {
                     Object.FindObjectOfType<PlayerDamageTaker>().RainRanOut(); //.TakeDamage(transform.position + Vector3.right);
-                    rainlessDamageTimer += rainlessDamageTime;
+                    rainlessDamageTimer = 0;
                 }
             }
             trailEffectsManager.SetPlayerRainDamagePercent(1 - (rainlessDamageTimer / rainlessDamageTime));
