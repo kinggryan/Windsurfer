@@ -8,6 +8,7 @@ public class PlayerDamageTaker : MonoBehaviour {
     public float invincibilityTime = 0.5f;
 
     public float hitMountainShakeIntensity = 0.5f;
+    public GameObject hitObstacleParticleEffect;
 
     public AudioSource hitSound;
 
@@ -19,15 +20,9 @@ public class PlayerDamageTaker : MonoBehaviour {
 	void Start () {
         health = GetComponent<PlayerHealth>();
         controller = GetComponent<PlayerMouseController>();
-
     }
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-    void OnTriggerEnter(Collider collider)
+	void OnTriggerEnter(Collider collider)
     {
         if (collider.GetComponent<PlayerObstacle>() && !invincible)
         {
@@ -51,6 +46,9 @@ public class PlayerDamageTaker : MonoBehaviour {
         shakeDirection.z = 0;
         shakeDirection.Normalize();
         Camera.main.GetComponent<CameraShaker>().ShakeInDirectionWithIntensity(shakeDirection, hitMountainShakeIntensity);
+
+        // Show particle effect
+        GameObject.Instantiate(hitObstacleParticleEffect, transform.position, Quaternion.LookRotation(-1 * transform.forward, transform.up));
 
         hitSound.Play();
     }
