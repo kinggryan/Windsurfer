@@ -6,7 +6,8 @@ public class LevelManager : MonoBehaviour {
     public void LevelComplete()
     {
         LevelDifficultyManager.LevelComplete();
-        Object.FindObjectOfType<PlayerCameraController>().LevelComplete();
+        Object.FindObjectOfType<PlayerCameraController>().LevelComplete(EndLevelAnimationComplete);
+        Object.FindObjectOfType<ScreenFlash>().LevelCompleteFadeOut();
     }
 
     public void EndLevelAnimationComplete()

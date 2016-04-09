@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public delegate void LevelCompleteDelegate();
+
 public class PlayerCameraController : MonoBehaviour {
 
     private enum CameraState { StartingLevel, PlayingLevel, EndingLevel };
@@ -10,6 +12,7 @@ public class PlayerCameraController : MonoBehaviour {
     private CameraState state;
     private float animationTime;
     private Vector3 startingLocalPosition;
+    private LevelCompleteDelegate endLevelAnimationCompletionHandler;
 
 	// Use this for initialization
 	void Start () {
@@ -39,7 +42,7 @@ public class PlayerCameraController : MonoBehaviour {
                 if (animationTime >= endLevelCameraZoomCurve.keys[startLevelCameraZoomCurve.keys.Length - 1].time)
                 {
                     // Go to next level
-                    Object.FindObjectOfType<LevelManager>().EndLevelAnimationComplete();
+                    endLevelAnimationCompletionHandler();
                 }
                 else
                 {
@@ -49,9 +52,10 @@ public class PlayerCameraController : MonoBehaviour {
         }
 	}
 
-    public void LevelComplete()
+    public void LevelComplete(LevelCompleteDelegate completionHandler)
     {
         state = CameraState.EndingLevel;
         animationTime = 0;
+        endLevelAnimationCompletionHandler = completionHandler;
     }
 }
