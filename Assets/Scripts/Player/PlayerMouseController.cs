@@ -43,10 +43,16 @@ public class PlayerMouseController : MonoBehaviour {
 
     [Header("Game Object References")]
     public GameObject directionIndicator;
+    public GameObject cloudPoofPrefab;
+    public ParticleSystem cloudTrailParticleSystem;
 
     [Header("Mouse Input")]
     public bool mouseInputMode;
     public float minMouseDistanceFromPlayerToTurnScreenSpace = 160f;
+
+    [Header("Audio")]
+    public AudioSource cloudEnterSound;
+    public AudioSource cloudExitSound;
 
     // Private Properties
     private float speedCharge = 0f;
@@ -328,6 +334,19 @@ public class PlayerMouseController : MonoBehaviour {
         if (cloud && cloud.HitPlayer())
         {
             rainMeterAmount = Mathf.Min(1, rainMeterAmount + rainMeterGainPerCloud);
+            GameObject.Instantiate(cloudPoofPrefab, transform.position, Quaternion.identity);
+            cloudEnterSound.Play();
+        }
+    }
+
+    void OnTriggerExit(Collider collider)
+    {
+        Cloud cloud = collider.GetComponent<Cloud>();
+        if (cloud)
+        {
+            GameObject.Instantiate(cloudPoofPrefab, transform.position, Quaternion.identity);
+            cloudTrailParticleSystem.Play();
+           // cloudExitSound.Play();
         }
     }
 

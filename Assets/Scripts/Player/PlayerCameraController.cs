@@ -19,6 +19,7 @@ public class PlayerCameraController : MonoBehaviour {
         state = CameraState.StartingLevel;
         animationTime = 0;
         startingLocalPosition = transform.localPosition;
+        GetComponent<CameraShaker>().enabled = false;
 	}
 	
 	// Update is called once per frame
@@ -31,6 +32,7 @@ public class PlayerCameraController : MonoBehaviour {
                 {
                     state = CameraState.PlayingLevel;
                     transform.localPosition = transform.localPosition;
+                    GetComponent<CameraShaker>().enabled = true;
                 }
                 else
                 {
@@ -57,5 +59,6 @@ public class PlayerCameraController : MonoBehaviour {
         state = CameraState.EndingLevel;
         animationTime = 0;
         endLevelAnimationCompletionHandler = completionHandler;
+        GetComponent<CameraShaker>().enabled = false;
     }
 }

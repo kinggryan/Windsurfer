@@ -30,6 +30,11 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     [Header("Rain Effects")]
     public AnimationCurve rainEmissionCurve;
     public float chargeRainEmissionRate;
+    public float chargingParticleSystemScale;
+    public float notChargingParticleSystemScale;
+    public float chargingParticleSystemRotationRate;
+    public float notChargingParticleSystemRotationRate;
+    private float currentParticleSystemRotationRate;
 
     public Color chargingTrailColor;
     public ParticleSystem rainParticleSystem;
@@ -40,6 +45,8 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     [Header("Audio")]
     public AudioSource rainOverWaterAudio;
     public AudioSource boostAudio;
+    public AudioSource startChargingAudio;
+    public AudioSource loopingChargeAudio;
 
     public float rainOverWaterAudioMaxVolume = 0.5f;
 
@@ -63,19 +70,27 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         trailRenderer = GetComponent<TrailRenderer>();
-        ParticleSystem.EmissionModule emission = chargeRainParticleSystem.emission;
-        emission.enabled = false;
+        chargingBoostParticleSystem.Play();
+        chargingBoostParticleSystem.transform.localScale = notChargingParticleSystemScale * (new Vector3(1, 1, 1));
         rainOverWaterAudio.volume = 0f;
         rainLossDamageOverlayMaxOpacity = rainLossDamageOverlay.color.a;
         normalPlayerColor = playerModel.GetComponent<Renderer>().material.color;
         playerDriftingColorChangeTime = 0;
         playerChargeLoopColorChangeTime = 0;
+        currentParticleSystemRotationRate = notChargingParticleSystemRotationRate;
+        charging = false;
     }
 
     // Update is called once per frame
     void Update () {
-        rainParticleSystem.transform.Rotate(transform.up,90f*Time.deltaTime);
-        if(playerDriftingColorChangeTime > 0)
+        // Update the scale of the charge/rain particle system
+        float targetScale = charging ? chargingParticleSystemScale : notChargingParticleSystemScale;
+        chargingBoostParticleSystem.transform.localScale = Mathf.Lerp(chargingBoostParticleSystem.transform.localScale.x,targetScale, 8 * Time.deltaTime) * (new Vector3(1, 1, 1));
+
+        currentParticleSystemRotationRate = Mathf.Lerp(currentParticleSystemRotationRate, charging ? chargingParticleSystemRotationRate : notChargingParticleSystemRotationRate, 8*Time.deltaTime);
+        rainParticleSystem.GetComponent<LocalRotator>().rotationRate = currentParticleSystemRotationRate;
+
+        if (playerDriftingColorChangeTime > 0)
         {
             playerDriftingColorChangeTime -= Time.deltaTime;
             Color color = playerDriftingColorChangeTime > 0 ? playerDriftingGradient.Evaluate(1 - (playerDriftingColorChangeTime / playerDriftingGradientDuration)) : normalPlayerColor;
@@ -110,9 +125,9 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
         charging = true; 
         if (rainMeter > 0)
         {
-            ParticleSystem.EmissionModule emission = chargeRainParticleSystem.emission;
-            emission.enabled = true;
-            chargingBoostParticleSystem.Play();
+            chargeRainParticleSystem.Play();
+            startChargingAudio.Play();
+        //    chargingBoostParticleSystem.Play();
         }
         playerDriftingColorChangeTime = playerDriftingGradientDuration;
     }
@@ -120,15 +135,14 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public void StopCharging()
     {
         charging = false;
-        ParticleSystem.EmissionModule emission = chargeRainParticleSystem.emission;
-        emission.enabled = false;
-        if(rainMeter > 0)
+        chargeRainParticleSystem.Stop();
+        if (rainMeter > 0)
         {
             boostRainParticleSystem.Play();
             boostAudio.Play();
         }
 
-        chargingBoostParticleSystem.Stop();
+    //    chargingBoostParticleSystem.Stop();
     }
 
     public void StartBraking()

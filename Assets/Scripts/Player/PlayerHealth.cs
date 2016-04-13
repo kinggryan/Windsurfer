@@ -17,8 +17,11 @@ public class PlayerHealth : MonoBehaviour {
     private Vector3 fallingSphericalMovementVector;
     private float deadTime;
 
-	// Use this for initialization
-	void Start () {
+    public AudioSource rainRanOutSound;
+    public AudioSource hitGroundSound;
+
+    // Use this for initialization
+    void Start () {
         currentHealth = maxHealth;
         playerHitGround = false;
 	}
@@ -42,6 +45,7 @@ public class PlayerHealth : MonoBehaviour {
             fallingSphericalMovementVector = GetComponent<PlayerMouseController>().sphericalMovementVector;
             GetComponent<PlayerMouseController>().enabled = false;
             deadTime = 0;
+            rainRanOutSound.Play();
         }
 
         healthBar.value = 1.0f * currentHealth / maxHealth;
@@ -66,7 +70,8 @@ public class PlayerHealth : MonoBehaviour {
     {
         if(playerLost && trigger.GetComponent<Planet>())
         {
-            GameObject.Instantiate(deathParticleEffect, transform.position, Quaternion.LookRotation(-1*transform.forward,transform.up));    
+            GameObject.Instantiate(deathParticleEffect, transform.position, Quaternion.LookRotation(-1*transform.forward,transform.up));
+            hitGroundSound.Play();
             playerHitGround = true;
             Camera.main.transform.parent = null;
             // Shake camera
