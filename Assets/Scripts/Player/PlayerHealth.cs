@@ -61,7 +61,7 @@ public class PlayerHealth : MonoBehaviour {
                 transform.position = transform.position.normalized * Mathf.Max(0, transform.position.magnitude - fallSpeedOnDeathCurve.Evaluate(deadTime) * Time.deltaTime);
           //  }
             deadTime += Time.deltaTime;
-            if(Input.GetButtonDown("Boost"))
+            if(playerHitGround && Input.GetButtonDown("Boost"))
                 Application.LoadLevel(Application.loadedLevel);
         }
     }
