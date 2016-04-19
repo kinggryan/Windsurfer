@@ -357,7 +357,10 @@ public class PlayerMouseController : MonoBehaviour {
 
     public void TakeDamageAndLoseRain()
     {
-        rainMeterAmount = 0;
-        rainlessDamageTimer = rainlessDamageTime;
+        if (rainMeterAmount > 0)
+        {
+            rainMeterAmount = 0;
+            rainlessDamageTimer = rainlessDamageTime;
+        }
     }
 }
