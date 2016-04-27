@@ -88,7 +88,7 @@ public class PlayerMouseController : MonoBehaviour {
                 Object.FindObjectOfType<PlayerDamageTaker>().RainRanOut();
                 rainlessDamageTimer = 0;
             }
-            trailEffectsManager.SetPlayerRainDamagePercent(1 - (rainlessDamageTimer / rainlessDamageTime));
+           // trailEffectsManager.SetPlayerRainDamagePercent(1 - (rainlessDamageTimer / rainlessDamageTime));
         }
         else
         {
@@ -140,7 +140,8 @@ public class PlayerMouseController : MonoBehaviour {
         }
 
         // Steer and brake
-        Steer( inputDirection, movementDirectionScreenSpace, Input.GetButton("Boost"));
+      //  if(Input.GetButton("Boost"))
+            Steer( inputDirection, movementDirectionScreenSpace, Input.GetButton("Boost"));
 
         // Push to above min speed
         if(sphericalMovementVector.magnitude < minSpeed)
