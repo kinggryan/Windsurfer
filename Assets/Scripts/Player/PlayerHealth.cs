@@ -25,6 +25,11 @@ public class PlayerHealth : MonoBehaviour {
         currentHealth = maxHealth;
         playerHitGround = false;
 	}
+
+    public bool PlayerHasHP()
+    {
+        return currentHealth > 0;
+    }
 	
 	public void TakeDamage(int damageTaken)
     {

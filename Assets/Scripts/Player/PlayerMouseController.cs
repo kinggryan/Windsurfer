@@ -78,25 +78,15 @@ public class PlayerMouseController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        // Cause rain loss
-        bool rainMeterWasAboveZero = rainMeterAmount > 0;
-
-        float rainMeterLossNow = Input.GetButton("Boost") ? rainMeterLossPerSecondCharging*Time.deltaTime : Input.GetButtonUp("Boost") ? rainMeterLossPerBoost : rainMeterLossPerSecond*Time.deltaTime;
-        rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossNow);
-        if(rainMeterAmount == 0)
+        // Cause rain loss if the rain meter 
+        if(rainMeterAmount < 1)
         {
-            if(rainMeterWasAboveZero)
+            rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerSecond * Time.deltaTime);
+            rainlessDamageTimer -= Time.deltaTime;
+            if (rainlessDamageTimer <= 0)
             {
-                rainlessDamageTimer = rainlessDamageTime;
-            }
-            else
-            {
-                rainlessDamageTimer -= Time.deltaTime;
-                if(rainlessDamageTimer <= 0)
-                {
-                    Object.FindObjectOfType<PlayerDamageTaker>().RainRanOut(); //.TakeDamage(transform.position + Vector3.right);
-                    rainlessDamageTimer = 0;
-                }
+                Object.FindObjectOfType<PlayerDamageTaker>().RainRanOut();
+                rainlessDamageTimer = 0;
             }
             trailEffectsManager.SetPlayerRainDamagePercent(1 - (rainlessDamageTimer / rainlessDamageTime));
         }
@@ -111,20 +101,16 @@ public class PlayerMouseController : MonoBehaviour {
             trailEffectsManager.StartCharging();
         }
 
-     //   RainFromCharge(rainFromChargeDistance, playerRainRadius);
-
         // Slow down and charge
         if (Input.GetButton("Boost"))
         {
             bool previouslyCharged = speedCharge >= maxChargeTime;
             speedCharge += Time.deltaTime;
-        //    rainMeterAmount = Mathf.Max(0, rainMeterAmount - Time.deltaTime * rainMeterLossPerSecond);
             RainFromCharge(rainFromChargeDistance, playerRainRadius);
             if (!previouslyCharged && speedCharge >= maxChargeTime)
             {
                 trailEffectsManager.BoostReady();
             }
-      //      Object.FindObjectOfType<CameraShaker>().ShakeInDirectionWithIntensity(Vector3.up, chargingRumbleIntensity, CameraShaker.ShakeType.Rumble);
         }
 
         // return to glide
@@ -154,9 +140,7 @@ public class PlayerMouseController : MonoBehaviour {
         }
 
         // Steer and brake
-      //  if(Input.GetButton("Boost") == false)
-            Steer( inputDirection, movementDirectionScreenSpace, Input.GetButton("Boost"));
-      //  Brake();
+        Steer( inputDirection, movementDirectionScreenSpace, Input.GetButton("Boost"));
 
         // Push to above min speed
         if(sphericalMovementVector.magnitude < minSpeed)
@@ -267,7 +251,7 @@ public class PlayerMouseController : MonoBehaviour {
     /// <param name="rainRadius"></param>
     void RainFromCharge(float chargeRainDistance,float rainRadius)
     {
-        if (rainMeterAmount > 0)
+     //   if (rainMeterAmount > 0)
         {
             // Scale rain based off of how sharply you are turning.
             float rainMultiplier = Mathf.Abs(boostTurnAmount / maxChargeDirectionAngle);
@@ -291,7 +275,7 @@ public class PlayerMouseController : MonoBehaviour {
     /// <param name="rainSpreadDegrees"></param>
     void RainFromBoost(float boostRainDistance,float rainRadius,float rainSpreadDegrees)
     {
-        if (rainMeterAmount > 0)
+    //    if (rainMeterAmount > 0)
         {
             // Drain rain meter
           //  rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerBoost);
