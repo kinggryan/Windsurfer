@@ -40,8 +40,8 @@ public class Ground : MonoBehaviour {
        // renderer = GetComponent<Renderer>();
        // renderer.material.SetFloat("_ForestAmount", rainAmount); // = rainAmount * forestFadeColor + (1 - rainAmount) * desertColor;
 
-        transform.rotation = Quaternion.LookRotation(Vector3.Cross(Vector3.up, transform.position.normalized), transform.position.normalized);
-        transform.position = groundDistance*transform.position.normalized;
+   //     transform.rotation = Quaternion.LookRotation(Vector3.Cross(Vector3.up, transform.position.normalized), transform.position.normalized);
+   //     transform.position = groundDistance*transform.position.normalized;
 
         Object.FindObjectOfType<GroundsRemainingController>().InitGround();
     }

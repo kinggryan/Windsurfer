@@ -37,37 +37,53 @@ public class SurfaceObjectOrienterEditor : Editor
 
         // Draw the spherical position handles
         Quaternion zPositionQuaternion = Handles.Disc(orienter.transform.rotation, Vector3.zero, orienter.transform.forward, orienter.groundDistance + 10f, true, 1f);
-        Quaternion inverseOfOriginalRotation = Quaternion.Inverse(orienter.transform.rotation);
-        orienter.transform.position = inverseOfOriginalRotation * orienter.transform.position;
-        orienter.transform.position = zPositionQuaternion * orienter.transform.position;
-        orienter.transform.rotation = zPositionQuaternion;
+        if(zPositionQuaternion != orienter.transform.rotation)
+        {
+            Undo.RecordObject(orienter.transform, "Orienter Rotation");
+            Quaternion inverseOfOriginalRotation = Quaternion.Inverse(orienter.transform.rotation);
+            orienter.transform.position = inverseOfOriginalRotation * orienter.transform.position;
+            orienter.transform.position = zPositionQuaternion * orienter.transform.position;
+            orienter.transform.rotation = zPositionQuaternion;
+        }
 
         // If Not a hex object, do this for the local x axis. Otherwise, do it for the two hex angles
         if (!orienter.hexObject)
         {
             Quaternion xPositionQuaternion = Handles.Disc(orienter.transform.rotation, Vector3.zero, orienter.transform.right, orienter.groundDistance + 10f, true, 1f);
-            inverseOfOriginalRotation = Quaternion.Inverse(orienter.transform.rotation);
-            orienter.transform.position = inverseOfOriginalRotation * orienter.transform.position;
-            orienter.transform.position = xPositionQuaternion * orienter.transform.position;
-            orienter.transform.rotation = xPositionQuaternion;
+            if(xPositionQuaternion != orienter.transform.rotation)
+            {
+                Undo.RecordObject(orienter.transform, "Orienter Rotation");
+                Quaternion inverseOfOriginalRotation = Quaternion.Inverse(orienter.transform.rotation);
+                orienter.transform.position = inverseOfOriginalRotation * orienter.transform.position;
+                orienter.transform.position = xPositionQuaternion * orienter.transform.position;
+                orienter.transform.rotation = xPositionQuaternion;
+            }
         }
         else
         {
             // Do a hex rotation
             Vector3 firstHexAngle = Quaternion.AngleAxis(60f, orienter.transform.up) * orienter.transform.forward;
             Quaternion firstHexRotation = Handles.Disc(orienter.transform.rotation, Vector3.zero, firstHexAngle, orienter.groundDistance + 10f, true, 1f);
-            inverseOfOriginalRotation = Quaternion.Inverse(orienter.transform.rotation);
-            orienter.transform.position = inverseOfOriginalRotation * orienter.transform.position;
-            orienter.transform.position = firstHexRotation * orienter.transform.position;
-            orienter.transform.rotation = firstHexRotation;
+            if(firstHexRotation != orienter.transform.rotation)
+            {
+                Undo.RecordObject(orienter.transform, "Orienter Rotation");
+                Quaternion inverseOfOriginalRotation = Quaternion.Inverse(orienter.transform.rotation);
+                orienter.transform.position = inverseOfOriginalRotation * orienter.transform.position;
+                orienter.transform.position = firstHexRotation * orienter.transform.position;
+                orienter.transform.rotation = firstHexRotation;
+            }
 
             // Do other hex rotation
             Vector3 secondHexAngle = Quaternion.AngleAxis(120f, orienter.transform.up) * orienter.transform.forward;
             Quaternion secondHexRotation = Handles.Disc(orienter.transform.rotation, Vector3.zero, secondHexAngle, orienter.groundDistance + 10f, true, 1f);
-            inverseOfOriginalRotation = Quaternion.Inverse(orienter.transform.rotation);
-            orienter.transform.position = inverseOfOriginalRotation * orienter.transform.position;
-            orienter.transform.position = secondHexRotation * orienter.transform.position;
-            orienter.transform.rotation = secondHexRotation;
+            if(secondHexRotation != orienter.transform.rotation)
+            {
+                Undo.RecordObject(orienter.transform, "Orienter Rotation");
+                Quaternion inverseOfOriginalRotation = Quaternion.Inverse(orienter.transform.rotation);
+                orienter.transform.position = inverseOfOriginalRotation * orienter.transform.position;
+                orienter.transform.position = secondHexRotation * orienter.transform.position;
+                orienter.transform.rotation = secondHexRotation;
+            }
         }
     }
 } 
@@ -80,8 +96,8 @@ public class SurfaceObjectOrienter : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        transform.rotation = Quaternion.LookRotation(Vector3.Cross(Vector3.up, transform.position.normalized), transform.position.normalized);
-        transform.position = groundDistance * transform.position.normalized;
+     //   transform.rotation = Quaternion.LookRotation(Vector3.Cross(Vector3.up, transform.position.normalized), transform.position.normalized);
+    //    transform.position = groundDistance * transform.position.normalized;
     }
 	
 	// Update is called once per frame
