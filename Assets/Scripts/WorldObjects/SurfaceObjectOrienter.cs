@@ -36,60 +36,38 @@ public class SurfaceObjectOrienterEditor : Editor
         orienter.transform.rotation = Handles.Disc(orienter.transform.rotation, orienter.transform.position, orienter.transform.position.normalized, 25f, true, 1f);
 
         // Draw the spherical position handles
-        float snapDegrees = 360 * orienter.surfaceSize / (2 * Mathf.PI * orienter.groundDistance);
-
-        Quaternion zPositionQuaternion = Handles.Disc(orienter.transform.rotation, Vector3.zero, orienter.transform.forward, orienter.groundDistance+10f, true, 1f);
-        if (Quaternion.Angle(zPositionQuaternion,orienter.transform.rotation) > snapDegrees)
-        {
-            Vector3 rotationAxis = orienter.transform.forward;
-            Quaternion tentativeRotation = orienter.transform.rotation * Quaternion.AngleAxis(snapDegrees, rotationAxis);
-            if (Quaternion.Angle(zPositionQuaternion, tentativeRotation) > Quaternion.Angle(zPositionQuaternion, orienter.transform.rotation))
-                orienter.transform.RotateAround(Vector3.zero, rotationAxis, -snapDegrees);
-            else
-                orienter.transform.RotateAround(Vector3.zero, rotationAxis, snapDegrees);
-        }
+        Quaternion zPositionQuaternion = Handles.Disc(orienter.transform.rotation, Vector3.zero, orienter.transform.forward, orienter.groundDistance + 10f, true, 1f);
+        Quaternion inverseOfOriginalRotation = Quaternion.Inverse(orienter.transform.rotation);
+        orienter.transform.position = inverseOfOriginalRotation * orienter.transform.position;
+        orienter.transform.position = zPositionQuaternion * orienter.transform.position;
+        orienter.transform.rotation = zPositionQuaternion;
 
         // If Not a hex object, do this for the local x axis. Otherwise, do it for the two hex angles
         if (!orienter.hexObject)
         {
             Quaternion xPositionQuaternion = Handles.Disc(orienter.transform.rotation, Vector3.zero, orienter.transform.right, orienter.groundDistance + 10f, true, 1f);
-            if (Quaternion.Angle(xPositionQuaternion, orienter.transform.rotation) > snapDegrees)
-            {
-                Vector3 rotationAxis = orienter.transform.right;
-                Quaternion tentativeRotation = orienter.transform.rotation * Quaternion.AngleAxis(snapDegrees, rotationAxis);
-                if (Quaternion.Angle(xPositionQuaternion, tentativeRotation) > Quaternion.Angle(xPositionQuaternion, orienter.transform.rotation))
-                    orienter.transform.RotateAround(Vector3.zero, rotationAxis, -snapDegrees);
-                else
-                    orienter.transform.RotateAround(Vector3.zero, rotationAxis, snapDegrees);
-            }
+            inverseOfOriginalRotation = Quaternion.Inverse(orienter.transform.rotation);
+            orienter.transform.position = inverseOfOriginalRotation * orienter.transform.position;
+            orienter.transform.position = xPositionQuaternion * orienter.transform.position;
+            orienter.transform.rotation = xPositionQuaternion;
         }
         else
         {
             // Do a hex rotation
             Vector3 firstHexAngle = Quaternion.AngleAxis(60f, orienter.transform.up) * orienter.transform.forward;
             Quaternion firstHexRotation = Handles.Disc(orienter.transform.rotation, Vector3.zero, firstHexAngle, orienter.groundDistance + 10f, true, 1f);
-            if (Quaternion.Angle(firstHexRotation, orienter.transform.rotation) > snapDegrees)
-            {
-                Vector3 rotationAxis = firstHexAngle;
-                Quaternion tentativeRotation = orienter.transform.rotation * Quaternion.AngleAxis(snapDegrees, rotationAxis);
-                if (Quaternion.Angle(firstHexRotation, tentativeRotation) > Quaternion.Angle(firstHexRotation, orienter.transform.rotation))
-                    orienter.transform.RotateAround(Vector3.zero, rotationAxis, -snapDegrees);
-                else
-                    orienter.transform.RotateAround(Vector3.zero, rotationAxis, snapDegrees);
-            }
+            inverseOfOriginalRotation = Quaternion.Inverse(orienter.transform.rotation);
+            orienter.transform.position = inverseOfOriginalRotation * orienter.transform.position;
+            orienter.transform.position = firstHexRotation * orienter.transform.position;
+            orienter.transform.rotation = firstHexRotation;
 
             // Do other hex rotation
             Vector3 secondHexAngle = Quaternion.AngleAxis(120f, orienter.transform.up) * orienter.transform.forward;
             Quaternion secondHexRotation = Handles.Disc(orienter.transform.rotation, Vector3.zero, secondHexAngle, orienter.groundDistance + 10f, true, 1f);
-            if (Quaternion.Angle(secondHexRotation, orienter.transform.rotation) > snapDegrees)
-            {
-                Vector3 rotationAxis = secondHexAngle;
-                Quaternion tentativeRotation = orienter.transform.rotation * Quaternion.AngleAxis(snapDegrees, rotationAxis);
-                if (Quaternion.Angle(secondHexRotation, tentativeRotation) > Quaternion.Angle(secondHexRotation, orienter.transform.rotation))
-                    orienter.transform.RotateAround(Vector3.zero, rotationAxis, -snapDegrees);
-                else
-                    orienter.transform.RotateAround(Vector3.zero, rotationAxis, snapDegrees);
-            }
+            inverseOfOriginalRotation = Quaternion.Inverse(orienter.transform.rotation);
+            orienter.transform.position = inverseOfOriginalRotation * orienter.transform.position;
+            orienter.transform.position = secondHexRotation * orienter.transform.position;
+            orienter.transform.rotation = secondHexRotation;
         }
     }
 } 
