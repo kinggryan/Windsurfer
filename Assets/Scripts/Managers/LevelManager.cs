@@ -19,7 +19,7 @@ public class LevelManager : MonoBehaviour {
         }
         else
         {
-            SceneManager.LoadScene("LevelSelect");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); // "LevelSelect");
         }
     }
 

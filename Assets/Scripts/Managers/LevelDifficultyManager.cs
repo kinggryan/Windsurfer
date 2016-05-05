@@ -35,7 +35,7 @@ public class LevelDifficultyManager : MonoBehaviour {
         spawner.minSpawnTime = level.minMountainSpawnRate;
         spawner.maxSpawnTime = level.maxMountainSpawnRate;
 
-        numLevels = levels.Length;
+        numLevels = 3; //levels.Length;
 	}
 
 	// Update is called once per frame

@@ -50,11 +50,11 @@ public class MountainSpawner : MonoBehaviour {
         Vector3 spawnPosition = mountainStartHeight * spawnDirection;
         Quaternion spawnRotation = Quaternion.LookRotation(Vector3.Cross(spawnPosition, Vector3.up), spawnPosition.normalized);
         currentlySpawningMountain = (GameObject)GameObject.Instantiate(mountainPrefab, spawnPosition, spawnRotation);
-        SurfaceObjectOrienter orienter = currentlySpawningMountain.GetComponent<SurfaceObjectOrienter>();
-        if(orienter)
-        {
-            Object.Destroy(orienter);
-        }
+     //   SurfaceObjectOrienter orienter = currentlySpawningMountain.GetComponent<SurfaceObjectOrienter>();
+     //   if(orienter)
+      //  {
+       //     Object.Destroy(orienter);
+       // }
     }
 
     bool MountainCanSpawnInDirection(Vector3 direction)
