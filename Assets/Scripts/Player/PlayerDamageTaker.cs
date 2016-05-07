@@ -2,6 +2,7 @@
 using System.Collections;
 
 [RequireComponent(typeof(PlayerHealth))]
+[RequireComponent(typeof(PlayerDamageFlicker))]
 public class PlayerDamageTaker : MonoBehaviour {
 
     public int damageTakenOnHit;
@@ -14,12 +15,14 @@ public class PlayerDamageTaker : MonoBehaviour {
 
     private PlayerHealth health;
     private PlayerMouseController controller;
+    private PlayerDamageFlicker flickerer;
     private bool invincible = false;
 
 	// Use this for initialization
 	void Start () {
         health = GetComponent<PlayerHealth>();
         controller = GetComponent<PlayerMouseController>();
+        flickerer = GetComponent<PlayerDamageFlicker>();
     }
 	
 	void OnTriggerEnter(Collider collider)
@@ -39,6 +42,7 @@ public class PlayerDamageTaker : MonoBehaviour {
     {
         //   health.TakeDamage(damageTakenOnHit);
         controller.TakeDamageAndLoseRain();
+        flickerer.TakeDamage();
         StartCoroutine(BecomeInvincible(invincibilityTime));
 
         // Shake camera

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 [RequireComponent(typeof(PlayerTrailEffectsManager))]
 [RequireComponent(typeof(PlayerUI))]
+[RequireComponent(typeof(PlayerDamageFlicker))]
 public class PlayerMouseController : MonoBehaviour {
 
     [Header("Basic Movement Rates")]
@@ -59,6 +60,7 @@ public class PlayerMouseController : MonoBehaviour {
     private float boostTurnAmount;
     private PlayerTrailEffectsManager trailEffectsManager;
     private PlayerUI ui;
+    private PlayerDamageFlicker flickerer;
     private float rainMeterAmount = 1f;
     private float rainlessDamageTimer = 0f;
 
@@ -73,6 +75,8 @@ public class PlayerMouseController : MonoBehaviour {
     {
         trailEffectsManager = GetComponent<PlayerTrailEffectsManager>();
         ui = GetComponent<PlayerUI>();
+        flickerer = GetComponent<PlayerDamageFlicker>();
+        flickerer.deathDuration = rainlessDamageTime;
         trailEffectsManager.StartCharging();
     }
 
@@ -87,6 +91,7 @@ public class PlayerMouseController : MonoBehaviour {
             {
                 Object.FindObjectOfType<PlayerDamageTaker>().RainRanOut();
                 rainlessDamageTimer = 0;
+                flickerer.PlayerDied();
             }
             trailEffectsManager.SetPlayerRainDamagePercent(1 - (rainlessDamageTimer / rainlessDamageTime));
         }
@@ -338,6 +343,10 @@ public class PlayerMouseController : MonoBehaviour {
     public void ForestCreated()
     {
         rainMeterAmount = Mathf.Min(1f, rainMeterAmount + rainMeterGainPerForestGrowth);
+        if(rainMeterAmount >= 1)
+        {
+            flickerer.Heal();
+        }
     }
 
     public void TakeDamageAndLoseRain()

@@ -239,15 +239,15 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     {
         yield return new WaitForSeconds(boostFlickerPeriod);
 
-        Color currentColor = playerRenderer.material.color;
-        if(currentColor == boostFlickerColor || totalTimeLeft <= 0)
-        {
-            playerRenderer.material.color = Color.white;
-        }
-        else
-        {
-            playerRenderer.material.color = Color.white; //boostFlickerColor;
-        }
+     //   Color currentColor = playerRenderer.material.color;
+    //    if(currentColor == boostFlickerColor || totalTimeLeft <= 0)
+    //    {
+        //    playerRenderer.material.color = Color.white;
+    //    }
+   //     else
+    //    {
+         //   playerRenderer.material.color = Color.white; //boostFlickerColor;
+  //      }
 
         if(totalTimeLeft > 0)
             StartCoroutine(FlickerBoostColor(totalTimeLeft - boostFlickerPeriod));
