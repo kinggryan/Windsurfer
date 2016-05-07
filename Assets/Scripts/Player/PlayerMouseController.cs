@@ -356,5 +356,9 @@ public class PlayerMouseController : MonoBehaviour {
             rainMeterAmount = 0;
             rainlessDamageTimer = rainlessDamageTime;
         }
+        else
+        {
+            Object.FindObjectOfType<PlayerDamageTaker>().RainRanOut();
+        }
     }
 }

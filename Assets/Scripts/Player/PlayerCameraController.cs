@@ -3,6 +3,7 @@ using System.Collections;
 
 public delegate void LevelCompleteDelegate();
 
+[RequireComponent(typeof(CameraShaker))]
 public class PlayerCameraController : MonoBehaviour {
 
     private enum CameraState { StartingLevel, PlayingLevel, EndingLevel };
@@ -13,13 +14,15 @@ public class PlayerCameraController : MonoBehaviour {
     private float animationTime;
     private Vector3 startingLocalPosition;
     private LevelCompleteDelegate endLevelAnimationCompletionHandler;
+    private CameraShaker cameraShaker;
 
 	// Use this for initialization
 	void Start () {
         state = CameraState.StartingLevel;
         animationTime = 0;
         startingLocalPosition = transform.localPosition;
-        GetComponent<CameraShaker>().enabled = false;
+        cameraShaker = GetComponent<CameraShaker>();
+        cameraShaker.enabled = false;
 	}
 	
 	// Update is called once per frame
@@ -31,8 +34,10 @@ public class PlayerCameraController : MonoBehaviour {
                 if (animationTime >= startLevelCameraZoomCurve.keys[startLevelCameraZoomCurve.keys.Length - 1].time)
                 {
                     state = CameraState.PlayingLevel;
-                    transform.localPosition = transform.localPosition;
-                    GetComponent<CameraShaker>().enabled = true;
+                    transform.localPosition = startingLocalPosition;
+
+                    cameraShaker.enabled = true;
+                    cameraShaker.UpdateOriginalRelativeCameraPosition(startingLocalPosition);
                 }
                 else
                 {

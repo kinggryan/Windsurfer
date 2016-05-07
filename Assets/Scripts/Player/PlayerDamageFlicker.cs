@@ -47,7 +47,6 @@ public class PlayerDamageFlicker : MonoBehaviour {
         yield return new WaitForSeconds(currentFlickerFrequency);
         if(damaged)
         {
-            Debug.Log("Starting new flicker at time: " + Time.time);
             StartCoroutine(Flicker());
         }
     }

@@ -19,6 +19,11 @@ public class CameraShaker : MonoBehaviour
 
     private Vector3 originalPosition;
 
+    void Start()
+    {
+        
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -54,6 +59,12 @@ public class CameraShaker : MonoBehaviour
         this.intensity = intensity;
         Invoke("StopShaking", duration);
         originalPosition = transform.localPosition;
+        Debug.Log("OG Position set");
+    }
+
+    public void UpdateOriginalRelativeCameraPosition(Vector3 newOriginalPosition)
+    {
+        originalPosition = newOriginalPosition;
     }
 }
 

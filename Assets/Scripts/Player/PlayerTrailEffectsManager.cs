@@ -13,6 +13,10 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public float maxSpeedFOV = 60f;
     public float minSpeedFOV = 50f;
 
+    [Header("Damage Effects")]
+    public Color damagedTrailColor;
+    public Color undamagedTrailColor;
+
     [Header("Animations")]
     public GameObject playerModel;
     public float playerMaxTurnRate;
@@ -259,5 +263,12 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
         Color color = rainLossDamageOverlay.color;
         color.a = rainDamageTimerPercent * rainLossDamageOverlayMaxOpacity;
         rainLossDamageOverlay.color = color;
+        if(rainDamageTimerPercent == 0)
+        {
+            trailRenderer.material.color = undamagedTrailColor;
+        }
+        else {
+            trailRenderer.material.color = damagedTrailColor;
+        }
     }
 }
