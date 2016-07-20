@@ -6,6 +6,7 @@ public class Eagle : MonoBehaviour {
 
     public float maxTurnSpeed;
     public Transform target;
+    public GameObject eagleModel;
 
     private SphereSurfaceSlider slider;
 
@@ -20,5 +21,6 @@ public class Eagle : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         slider.sphericalVelocity = Vector3.RotateTowards(slider.sphericalVelocity, slider.sphericalVelocity.magnitude*Vector3.Cross(transform.position.normalized, target.position.normalized).normalized, maxTurnSpeed*Mathf.Deg2Rad*Time.deltaTime, Mathf.Infinity);
-	}
+        eagleModel.transform.rotation = Quaternion.LookRotation(transform.position.normalized, -Vector3.Cross(transform.position.normalized, slider.sphericalVelocity.normalized));
+    }
 }

@@ -25,7 +25,7 @@ public class UIController : MonoBehaviour {
             GameComplete();
         }
         else
-            Application.LoadLevel(Application.loadedLevel);
+            Application.LoadLevel(0);
     }
 
     public void GameComplete()

@@ -262,7 +262,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
         // 1.0 is taking damage, 0 is not at all.
         Color color = rainLossDamageOverlay.color;
         color.a = rainDamageTimerPercent * rainLossDamageOverlayMaxOpacity;
-        rainLossDamageOverlay.color = color;
+  //      rainLossDamageOverlay.color = color;
         if(rainDamageTimerPercent == 0)
         {
             trailRenderer.material.color = undamagedTrailColor;

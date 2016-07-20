@@ -78,6 +78,8 @@ public class PlayerMouseController : MonoBehaviour {
         flickerer = GetComponent<PlayerDamageFlicker>();
         flickerer.deathDuration = rainlessDamageTime;
         trailEffectsManager.StartCharging();
+
+        sphericalMovementVector = minGlideSpeed * sphericalMovementVector.normalized;
     }
 
 	// Update is called once per frame
