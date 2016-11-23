@@ -1,4 +1,6 @@
-﻿// Written by  Nils Daumann
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+// Written by  Nils Daumann
 // Taken from http://wiki.unity3d.com/index.php/Planet
 Shader "SlinDev/Planet"
 {
@@ -51,8 +53,8 @@ Shader "SlinDev/Planet"
 		v2f o;
 
 		o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
-		o.normal = mul((float3x3)_Object2World, v.normal);
-		o.worldvertpos = mul(_Object2World, v.vertex).xyz;
+		o.normal = mul((float3x3)unity_ObjectToWorld, v.normal);
+		o.worldvertpos = mul(unity_ObjectToWorld, v.vertex).xyz;
 		o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
 
 		return o;
@@ -111,8 +113,8 @@ Shader "SlinDev/Planet"
 
 		v.vertex.xyz += v.normal*_Size;
 		o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
-		o.normal = mul((float3x3)_Object2World, v.normal);
-		o.worldvertpos = mul(_Object2World, v.vertex);
+		o.normal = mul((float3x3)unity_ObjectToWorld, v.normal);
+		o.worldvertpos = mul(unity_ObjectToWorld, v.vertex);
 
 		return o;
 	}
