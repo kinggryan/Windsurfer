@@ -16,15 +16,15 @@ public class LevelSelectRotator : MonoBehaviour {
 	void Start () {
 	
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	    if(rotating)
+
+    // Update is called once per frame
+    void Update() {
+        if (rotating)
         {
             // Get rotation delta
             float previousAngle = rotationCurve.Evaluate(rotationValue / rotationTime);
             rotationValue += Time.deltaTime;
-            if(rotationValue > 1)
+            if (rotationValue > 1)
             {
                 rotating = false;
                 rotationValue = 1;
@@ -37,25 +37,57 @@ public class LevelSelectRotator : MonoBehaviour {
         }
         else
         {
-            if(Input.GetKeyDown("space"))
+            if (Input.GetKeyDown("right"))
             {
                 RotateToNextObject();
+            }
+            else if (Input.GetKeyDown("left"))
+            {
+                RotateToPreviousObject();
+            }
+            else if (Input.GetKeyDown("space") || Input.GetKeyDown("enter") || Input.GetMouseButtonDown(0))
+            {
+                menuOptions[selectedMenuOption].PerformAction();
             }
         }
 	}
 
     void RotateToNextObject()
     {
+        RotateToObjectWithSign(1);
+    }
+
+    void RotateToPreviousObject()
+    {
+        RotateToObjectWithSign(-1);
+    }
+
+    void RotateToObjectWithSign(int sign)
+    {
+        // Deselect old object
+        LevelPlanetRotator oldPlanetRotator = menuOptions[selectedMenuOption].GetComponent<LevelPlanetRotator>();
+        if (oldPlanetRotator)
+            oldPlanetRotator.Deselect();
+
         // Find the desired rotation delta
-        selectedMenuOption = (selectedMenuOption + 1) % menuOptions.Length;
+        selectedMenuOption = selectedMenuOption + sign*1;
+        if (selectedMenuOption >= menuOptions.Length)
+            selectedMenuOption -= menuOptions.Length;
+        else if (selectedMenuOption < 0)
+            selectedMenuOption += menuOptions.Length;
         Debug.Log("Selected " + menuOptions[selectedMenuOption]);
 
         Vector3 startVector = Vector3.Project(Camera.main.transform.position - transform.position, transform.up);
-        Vector3 endVector = Vector3.Project(menuOptions[selectedMenuOption].transform.position - transform.position,transform.up);
-        totalDesiredRotationDelta = Vector3.Angle(endVector, startVector);
+        Vector3 endVector = Vector3.Project(menuOptions[selectedMenuOption].transform.position - transform.position, transform.up);
+        totalDesiredRotationDelta = sign*Vector3.Angle(endVector, startVector);
 
         // Set rotating
         rotating = true;
         rotationValue = 0;
+
+        // Select new object
+        LevelPlanetRotator newPlanetRotator = menuOptions[selectedMenuOption].GetComponent<LevelPlanetRotator>();
+        if (newPlanetRotator)
+            newPlanetRotator.Select();
     }
 }
