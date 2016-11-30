@@ -12,6 +12,10 @@ public class MenuOption : MonoBehaviour {
     public MenuOptionActionType actionType = MenuOptionActionType.Level;
     public string loadLevelString;
 
+    bool unlocked;
+    public Renderer planetRenderer;
+    public Color lockedPlanetColor;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -19,7 +23,21 @@ public class MenuOption : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+	    // Debug
+        if(Input.GetKeyDown("u"))
+        {
+            if (unlocked)
+                Lock();
+            else
+                Unlock();
+        }
+
+        // Fade towards correct color
+        if(planetRenderer)
+        {
+            foreach(Material mat in planetRenderer.materials)
+                mat.color = Color.Lerp(planetRenderer.sharedMaterial.color, unlocked ? Color.white : lockedPlanetColor, Time.deltaTime / 0.1f);
+        }
 	}
 
     public void PerformAction()
@@ -37,5 +55,15 @@ public class MenuOption : MonoBehaviour {
     void LoadLevel()
     {
         SceneManager.LoadSceneAsync(loadLevelString);
+    }
+
+    public void Lock()
+    {
+        unlocked = false;
+    }
+
+    public void Unlock()
+    {
+        unlocked = true;
     }
 }
