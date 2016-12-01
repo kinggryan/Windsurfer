@@ -55,6 +55,11 @@ public class LevelUnlockManager {
 		return true;
 	}
 
+	public bool IsLevelUnlocked(string sceneName) {
+		int levelNumber = GetLevelNumberFromSceneName (sceneName);
+		return allLevelInfo [levelNumber].unlocked;
+	}
+
 	public string GetLevelSceneNameAfter(string sceneName) {
 		int levelNumber = GetLevelNumberFromSceneName (sceneName);
 		if (levelNumber + 1 < allLevelInfo.Length)
