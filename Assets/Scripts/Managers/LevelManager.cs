@@ -6,30 +6,20 @@ public class LevelManager : MonoBehaviour {
 
     public void LevelComplete()
     {
-        LevelDifficultyManager.LevelComplete();
+		LevelUnlockManager.SharedInstance ().LevelCompleted (SceneManager.GetActiveScene ().name);
         Object.FindObjectOfType<PlayerCameraController>().LevelComplete(EndLevelAnimationComplete);
         Object.FindObjectOfType<ScreenFlash>().LevelCompleteFadeOut();
     }
 
     public void EndLevelAnimationComplete()
     {
-        if(LevelDifficultyManager.GameComplete())
+		if(LevelUnlockManager.SharedInstance().IsGameComplete())
         {
             Object.FindObjectOfType<UIController>().GameComplete();
         }
         else
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); // "LevelSelect");
+			SceneManager.LoadScene(LevelUnlockManager.SharedInstance().GetLevelSceneNameAfter(SceneManager.GetActiveScene().name)); // "LevelSelect");
         }
     }
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }
