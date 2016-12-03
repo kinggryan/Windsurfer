@@ -1,9 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 public class LevelUnlockManager {
 
 	// MARK: Types
+	[System.Serializable]
 	public struct LevelInfo 
 	{
 		public string name;
@@ -18,17 +22,26 @@ public class LevelUnlockManager {
 
 	// MARK: Private methods
 	private LevelUnlockManager() {
-		// TODO: Use some sort of xml or other type of format to init this data. Shouldn't have to do it in source.
-		allLevelInfo = new LevelInfo[8];
+		// If this file exists, load the level info
+		Debug.Log("File location: " + Application.persistentDataPath + "/saveData.gd");
+		if (File.Exists (Application.persistentDataPath + "/saveData.gd")) {
+			BinaryFormatter formatter = new BinaryFormatter ();
+			FileStream file = File.Open (Application.persistentDataPath + "/saveData.gd", FileMode.Open);
+			allLevelInfo = (LevelInfo[])formatter.Deserialize (file);
+			file.Close ();
+		} else {
+			// TODO: Use some sort of xml or other type of format to init this data. Shouldn't have to do it in source.
+			allLevelInfo = new LevelInfo[8];
 
-		for (int i = 0; i < 8; i++) {
-			allLevelInfo [i].name = "World " + i;
-			allLevelInfo [i].sceneName = "Level1-" + i;
-			allLevelInfo [i].unlocked = false;
-			allLevelInfo [i].completed = false;
+			for (int i = 0; i < 8; i++) {
+				allLevelInfo [i].name = "World " + (i+1);
+				allLevelInfo [i].sceneName = "Level1-" + (i+1);
+				allLevelInfo [i].unlocked = false;
+				allLevelInfo [i].completed = false;
+			}
+
+			allLevelInfo [0].unlocked = true;
 		}
-
-		allLevelInfo [0].unlocked = true;
 	}
 
 	// MARK: Static Methods
@@ -45,6 +58,8 @@ public class LevelUnlockManager {
 		allLevelInfo [levelNumber].completed = true;
 		if (levelNumber + 1 < allLevelInfo.Length)
 			allLevelInfo [levelNumber + 1].unlocked = true;
+
+		Save ();
 	}
 
 	public bool IsGameComplete() {
@@ -77,5 +92,13 @@ public class LevelUnlockManager {
 			}
 		}
 		return levelNumber;
+	}
+
+	private void Save()
+	{
+		BinaryFormatter formatter = new BinaryFormatter ();
+		FileStream fileStream = File.Create (Application.persistentDataPath + "/saveData.gd");
+		formatter.Serialize (fileStream, allLevelInfo);
+		fileStream.Close ();
 	}
 }
