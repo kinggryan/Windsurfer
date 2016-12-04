@@ -16,7 +16,7 @@ public class LevelPlanetRotator : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         currentRotationSpeed = Mathf.Lerp(currentRotationSpeed, selected ? selectedRotationSpeed : deselectedRotationSpeed, Time.deltaTime / 0.1f);
-        transform.Rotate(Vector3.forward, Time.deltaTime * currentRotationSpeed, Space.Self);
+		transform.RotateAround (transform.parent.position, transform.parent.up, currentRotationSpeed * Time.deltaTime);
 	}
 
     public void Select()

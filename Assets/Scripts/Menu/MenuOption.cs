@@ -9,6 +9,7 @@ public enum MenuOptionActionType
 
 public class MenuOption : MonoBehaviour {
 
+	public LoadLevelAnimator loadLevelAnimator;
     public MenuOptionActionType actionType = MenuOptionActionType.Level;
     public string loadLevelString;
 
@@ -16,7 +17,11 @@ public class MenuOption : MonoBehaviour {
     public Renderer planetRenderer;
     public Color lockedPlanetColor;
 
+	private static bool selectionsLocked;
+
 	void Start() {
+		selectionsLocked = false;
+
 		if (LevelUnlockManager.SharedInstance ().IsLevelUnlocked (loadLevelString))
 			Unlock ();
 		else
@@ -47,7 +52,10 @@ public class MenuOption : MonoBehaviour {
 
     void LoadLevel()
     {
-        SceneManager.LoadSceneAsync(loadLevelString);
+		if (!selectionsLocked) {
+			selectionsLocked = true;
+			loadLevelAnimator.LoadLevel (loadLevelString);
+		}
     }
 
     public void Lock()
