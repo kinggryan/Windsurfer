@@ -9,6 +9,7 @@ public enum MenuOptionActionType
 
 public class MenuOption : MonoBehaviour {
 
+	public LoadLevelAnimator loadLevelAnimator;
     public MenuOptionActionType actionType = MenuOptionActionType.Level;
     public string loadLevelString;
 
@@ -16,23 +17,20 @@ public class MenuOption : MonoBehaviour {
     public Renderer planetRenderer;
     public Color lockedPlanetColor;
 
-	// Use this for initialization
-	void Start () {
-	
+	private static bool selectionsLocked;
+
+	void Start() {
+		selectionsLocked = false;
+
+		if (LevelUnlockManager.SharedInstance ().IsLevelUnlocked (loadLevelString))
+			Unlock ();
+		else
+			Lock ();
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-	    // Debug
-        if(Input.GetKeyDown("u"))
-        {
-            if (unlocked)
-                Lock();
-            else
-                Unlock();
-        }
-
-        // Fade towards correct color
+	    // Fade towards correct color
         if(planetRenderer)
         {
             foreach(Material mat in planetRenderer.materials)
@@ -54,7 +52,10 @@ public class MenuOption : MonoBehaviour {
 
     void LoadLevel()
     {
-        SceneManager.LoadSceneAsync(loadLevelString);
+		if (!selectionsLocked) {
+			selectionsLocked = true;
+			loadLevelAnimator.LoadLevel (loadLevelString);
+		}
     }
 
     public void Lock()

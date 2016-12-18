@@ -59,7 +59,6 @@ public class CameraShaker : MonoBehaviour
         this.intensity = intensity;
         Invoke("StopShaking", duration);
         originalPosition = transform.localPosition;
-        Debug.Log("OG Position set");
     }
 
     public void UpdateOriginalRelativeCameraPosition(Vector3 newOriginalPosition)
