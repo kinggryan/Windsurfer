@@ -75,12 +75,10 @@ public class LevelSelectRotator : MonoBehaviour {
             selectedMenuOption -= menuOptions.Length;
         else if (selectedMenuOption < 0)
             selectedMenuOption += menuOptions.Length;
-        Debug.Log("Selected " + menuOptions[selectedMenuOption]);
 
         Vector3 startVector = Vector3.ProjectOnPlane(Camera.main.transform.position - transform.position, transform.up);
         Vector3 endVector = Vector3.ProjectOnPlane(menuOptions[selectedMenuOption].transform.position - transform.position, transform.up);
         totalDesiredRotationDelta = sign*Vector3.Angle(endVector, startVector);
-        Debug.Log("Total desired rotation delta " + totalDesiredRotationDelta);
 
         // Set rotating
         rotating = true;

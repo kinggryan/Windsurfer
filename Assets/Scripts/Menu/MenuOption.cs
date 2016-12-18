@@ -61,10 +61,12 @@ public class MenuOption : MonoBehaviour {
     public void Lock()
     {
         unlocked = false;
+        Debug.Log(loadLevelString + " is locked.");
     }
 
     public void Unlock()
     {
         unlocked = true;
+        Debug.Log(loadLevelString + " is unlocked.");
     }
 }
