@@ -43,7 +43,9 @@ public class Ground : MonoBehaviour {
    //     transform.rotation = Quaternion.LookRotation(Vector3.Cross(Vector3.up, transform.position.normalized), transform.position.normalized);
    //     transform.position = groundDistance*transform.position.normalized;
 
-        Object.FindObjectOfType<GroundsRemainingController>().InitGround();
+		var controller = Object.FindObjectOfType<GroundsRemainingController> ();
+		if(controller)
+			controller.InitGround();
     }
 
     void RainedOnAmount(float amountRainedOn)
