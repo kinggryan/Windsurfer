@@ -221,7 +221,7 @@ public class PlayerMouseController : MonoBehaviour {
         Vector3 currentBoostDirection = Quaternion.AngleAxis(boostTurnAmount, transform.position) * sphericalMovementVector;
         Vector3 currentBoostDirectionScreenSpace = Camera.main.transform.InverseTransformDirection(Vector3.Cross(currentBoostDirection, transform.position)).normalized;
 
-        if (Vector3.Angle(inputDirection, currentBoostDirectionScreenSpace) >= minTurnInputAngle && inputDirection.magnitude >= 1 && Vector3.Angle(inputDirection, currentBoostDirectionScreenSpace) <= maxTurnInputAngle)
+		if (Vector3.Angle(inputDirection, currentBoostDirectionScreenSpace) >= minTurnInputAngle && inputDirection.magnitude >= 1 ) //&& Vector3.Angle(inputDirection, currentBoostDirectionScreenSpace) <= maxTurnInputAngle)
         {
             float turnAmount = (Vector3.Angle(inputDirection, playerScreenMovementDirection) - minTurnInputAngle) / (maxTurnInputAngle - minTurnInputAngle);
             turnAmount = Mathf.Clamp(turnAmount, 0f, 1f);
