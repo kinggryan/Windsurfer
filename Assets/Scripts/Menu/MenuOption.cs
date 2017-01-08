@@ -4,7 +4,8 @@ using System.Collections;
 
 public enum MenuOptionActionType
 {
-    Level
+    Level,
+	None
 };
 
 public class MenuOption : MonoBehaviour {
