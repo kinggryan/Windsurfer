@@ -188,6 +188,7 @@ public class PlayerMouseController : MonoBehaviour {
         // Look
         Vector3 lookDirection = Quaternion.AngleAxis(boostTurnAmount, transform.position) * sphericalMovementVector;
         directionIndicator.transform.rotation = Quaternion.LookRotation(lookDirection, transform.position.normalized);
+		Debug.Log ("Boost turn " + boostTurnAmount);
 
         // Update Visual Components
         trailEffectsManager.UpdateMovement(sphericalMovementVector, lookDirection,maxChargeDirectionAngle);
@@ -219,28 +220,16 @@ public class PlayerMouseController : MonoBehaviour {
     {
         boostTurnAmount = boostTurnAmount % 360;
         boostTurnAmount = Mathf.Clamp(boostTurnAmount,-maxChargeDirectionAngle, maxChargeDirectionAngle);
-        Vector3 currentBoostDirection = Quaternion.AngleAxis(boostTurnAmount, transform.position) * sphericalMovementVector;
-        Vector3 currentBoostDirectionScreenSpace = Camera.main.transform.InverseTransformDirection(Vector3.Cross(currentBoostDirection, transform.position)).normalized;
 
-		if (Vector3.Angle(inputDirection, currentBoostDirectionScreenSpace) >= minTurnInputAngle && inputDirection.magnitude >= 1 ) //&& Vector3.Angle(inputDirection, currentBoostDirectionScreenSpace) <= maxTurnInputAngle)
+		if (Vector3.Angle(inputDirection, playerScreenMovementDirection) >= minTurnInputAngle && inputDirection.magnitude >= 1 )
         {
             float turnAmount = (Vector3.Angle(inputDirection, playerScreenMovementDirection) - minTurnInputAngle) / (maxTurnInputAngle - minTurnInputAngle);
             turnAmount = Mathf.Clamp(turnAmount, 0f, 1f);
-            float sign = Vector3.Angle(Vector3.Cross(Vector3.forward, currentBoostDirectionScreenSpace), inputDirection) <= 90 ? -1 : 1;
+			float sign = Vector3.Angle(Vector3.Cross(Vector3.forward, playerScreenMovementDirection), inputDirection) <= 90 ? -1 : 1;
             sphericalMovementVector = Quaternion.AngleAxis(sign * Time.deltaTime * turnAmount * maxTurnSpeed, transform.position) * sphericalMovementVector ;
 
-			Debug.Log ("Input " + inputDirection + " player screen movement " + playerScreenMovementDirection);
-
-            // Turn the boost angle
-            if(chargingBoost)
-            {
-                currentBoostDirectionScreenSpace.z = 0;
-                turnAmount = Vector3.Angle(inputDirection, currentBoostDirection) / minTurnInputAngle;
-                turnAmount = Mathf.Clamp(turnAmount, 0f, 1f);
-                sign = Vector3.Angle(Vector3.Cross(Vector3.forward, currentBoostDirectionScreenSpace), inputDirection) <= 90 ? -1 : 1;
-
-                boostTurnAmount += Time.deltaTime * turnAmount * sign * maxChargeTurnSpeed;
-            }
+			if(chargingBoost)
+				boostTurnAmount = sign * turnAmount * maxChargeDirectionAngle;
         }
     }
 
