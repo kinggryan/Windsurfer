@@ -188,7 +188,6 @@ public class PlayerMouseController : MonoBehaviour {
         // Look
         Vector3 lookDirection = Quaternion.AngleAxis(boostTurnAmount, transform.position) * sphericalMovementVector;
         directionIndicator.transform.rotation = Quaternion.LookRotation(lookDirection, transform.position.normalized);
-		Debug.Log ("Boost turn " + boostTurnAmount);
 
         // Update Visual Components
         trailEffectsManager.UpdateMovement(sphericalMovementVector, lookDirection,maxChargeDirectionAngle);
