@@ -148,7 +148,8 @@ public class PlayerMouseController : MonoBehaviour {
 
         // Steer and brake
       //  if(Input.GetButton("Boost"))
-            Steer( inputDirection, movementDirectionScreenSpace, Input.GetButton("Boost"));
+		inputDirection.z = 0;
+        Steer( inputDirection, movementDirectionScreenSpace, Input.GetButton("Boost"));
 
         // Push to above min speed
         if(sphericalMovementVector.magnitude < minSpeed)
@@ -227,6 +228,8 @@ public class PlayerMouseController : MonoBehaviour {
             turnAmount = Mathf.Clamp(turnAmount, 0f, 1f);
             float sign = Vector3.Angle(Vector3.Cross(Vector3.forward, currentBoostDirectionScreenSpace), inputDirection) <= 90 ? -1 : 1;
             sphericalMovementVector = Quaternion.AngleAxis(sign * Time.deltaTime * turnAmount * maxTurnSpeed, transform.position) * sphericalMovementVector ;
+
+			Debug.Log ("Input " + inputDirection + " player screen movement " + playerScreenMovementDirection);
 
             // Turn the boost angle
             if(chargingBoost)
