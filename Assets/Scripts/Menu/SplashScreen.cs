@@ -37,7 +37,7 @@ public class SplashScreen : MonoBehaviour {
 			Color originalColor = fadeInOutImage.color;
 			originalColor.a = 1 - fadeInOutCurve.Evaluate (fadeTime / fadeInDuration);
 			fadeInOutImage.color = originalColor;
-		} else if (fadeOutEnabled && Input.GetKeyDown("space")) {
+		} else if (fadeOutEnabled && Input.GetMouseButtonDown(0)) {
 			fadingOut = true;
 			fadeTime = fadeOutDuration;
 		}
