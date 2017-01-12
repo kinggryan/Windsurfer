@@ -47,6 +47,10 @@ public class PlayerMouseController : MonoBehaviour {
     public GameObject cloudPoofPrefab;
     public ParticleSystem cloudTrailParticleSystem;
 
+	[Header("Mobile Input")]
+	public bool mobileInputMode;
+	public float minTouchDistanceFromPlayerToTurnScreenSpace = 20f;
+
     [Header("Mouse Input")]
     public bool mouseInputMode;
     public float minMouseDistanceFromPlayerToTurnScreenSpace = 160f;
@@ -63,6 +67,7 @@ public class PlayerMouseController : MonoBehaviour {
     private PlayerDamageFlicker flickerer;
     private float rainMeterAmount = 1f;
     private float rainlessDamageTimer = 0f;
+	private Vector3 previousInputMovementDirection = Vector3.up;
 
     // Public Methods
     public void ChargeRainMeter(float amount)
@@ -80,6 +85,9 @@ public class PlayerMouseController : MonoBehaviour {
         trailEffectsManager.StartCharging();
 
         sphericalMovementVector = minGlideSpeed * sphericalMovementVector.normalized;
+
+		// Automatically go into mobile input mode if touch is supported
+		mobileInputMode = Input.touchSupported;
     }
 
 	// Update is called once per frame
@@ -129,7 +137,18 @@ public class PlayerMouseController : MonoBehaviour {
         // Get input
         Vector3 movementDirectionScreenSpace = Camera.main.transform.InverseTransformDirection(Vector3.Cross(sphericalMovementVector, transform.position)).normalized;
         Vector3 inputDirection = Vector3.zero;
-        if (mouseInputMode)
+		if (mobileInputMode) {
+			if (Input.touchCount > 0) {
+				Vector3 positionScreenSpace = Camera.main.WorldToScreenPoint (transform.position);
+				movementDirectionScreenSpace.z = 0;
+				inputDirection = (positionScreenSpace - Input.touches[0].position) / minTouchDistanceFromPlayerToTurnScreenSpace;
+				inputDirection *= -1;
+				previousInputMovementDirection = inputDirection;
+			} else {
+				inputDirection = previousInputMovementDirection;
+			}
+		}
+        else if (mouseInputMode)
         {
             Vector3 positionScreenSpace = Camera.main.WorldToScreenPoint(transform.position);
             movementDirectionScreenSpace.z = 0;
