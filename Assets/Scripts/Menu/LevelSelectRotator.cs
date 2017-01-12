@@ -37,15 +37,15 @@ public class LevelSelectRotator : MonoBehaviour {
         }
         else
         {
-            if (Input.GetKeyDown("right"))
+			if (Input.GetKeyDown("right") || MobileInput.GetSwipedRight())
             {
                 RotateToNextObject();
             }
-            else if (Input.GetKeyDown("left"))
+			else if (Input.GetKeyDown("left") || MobileInput.GetSwipedLeft())
             {
                 RotateToPreviousObject();
             }
-            else if (Input.GetKeyDown("space") || Input.GetKeyDown("enter") || Input.GetMouseButtonDown(0))
+			else if (Input.GetKeyDown("space") || Input.GetKeyDown("enter") || Input.GetMouseButtonDown(0) || MobileInput.GetTouchUp())
             {
                 menuOptions[selectedMenuOption].PerformAction();
             }

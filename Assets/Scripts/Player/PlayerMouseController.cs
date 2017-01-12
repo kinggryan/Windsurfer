@@ -111,13 +111,13 @@ public class PlayerMouseController : MonoBehaviour {
         }
 
         // Update Effects while boosting
-        if(Input.GetButtonDown("Boost"))
+		if(mobileInputMode ? MobileInput.GetTouchDown() : Input.GetButtonDown("Boost"))
         {
             trailEffectsManager.StartCharging();
         }
 
         // Slow down and charge
-        if (Input.GetButton("Boost"))
+		if (mobileInputMode ? MobileInput.GetTouched() : Input.GetButton("Boost"))
         {
             bool previouslyCharged = speedCharge >= maxChargeTime;
             speedCharge += Time.deltaTime;
@@ -139,9 +139,13 @@ public class PlayerMouseController : MonoBehaviour {
         Vector3 inputDirection = Vector3.zero;
 		if (mobileInputMode) {
 			if (Input.touchCount > 0) {
+				// flatten screen space position
 				Vector3 positionScreenSpace = Camera.main.WorldToScreenPoint (transform.position);
 				movementDirectionScreenSpace.z = 0;
-				inputDirection = (positionScreenSpace - Input.touches[0].position) / minTouchDistanceFromPlayerToTurnScreenSpace;
+
+				// Convert touch to 3d vector
+				Vector3 touchPositionScreenSpace = new Vector3 (Input.touches [0].position.x, Input.touches [0].position.y,0);
+				inputDirection = (positionScreenSpace - touchPositionScreenSpace) / minTouchDistanceFromPlayerToTurnScreenSpace;
 				inputDirection *= -1;
 				previousInputMovementDirection = inputDirection;
 			} else {
@@ -168,7 +172,7 @@ public class PlayerMouseController : MonoBehaviour {
         // Steer and brake
       //  if(Input.GetButton("Boost"))
 		inputDirection.z = 0;
-        Steer( inputDirection, movementDirectionScreenSpace, Input.GetButton("Boost"));
+		Steer( inputDirection, movementDirectionScreenSpace, mobileInputMode ? MobileInput.GetTouched() : Input.GetButton("Boost"));
 
         // Push to above min speed
         if(sphericalMovementVector.magnitude < minSpeed)
@@ -180,7 +184,7 @@ public class PlayerMouseController : MonoBehaviour {
         transform.RotateAround(Vector3.zero, sphericalMovementVector, sphericalMovementVector.magnitude * Time.deltaTime);
 
         // Boost
-        if(Input.GetButtonUp("Boost"))
+		if(mobileInputMode ? MobileInput.GetTouchUp() : Input.GetButtonUp("Boost"))
         {
             if (speedCharge >= maxChargeTime)
             {
@@ -248,17 +252,6 @@ public class PlayerMouseController : MonoBehaviour {
 
 			if(chargingBoost)
 				boostTurnAmount = sign * turnAmount * maxChargeDirectionAngle;
-        }
-    }
-
-    /// <summary>
-    /// Brakes the player if the player should brake based on inputs.
-    /// </summary>
-    void Brake()
-    {
-        if(Input.GetButton("Brake"))
-        {
-            sphericalMovementVector = (sphericalMovementVector.magnitude - brakeRate * Time.deltaTime) * sphericalMovementVector.normalized;
         }
     }
 
