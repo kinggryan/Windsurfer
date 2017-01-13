@@ -5,6 +5,7 @@ using System.Collections;
 public enum MenuOptionActionType
 {
     Level,
+	Credits,
 	None
 };
 
@@ -37,6 +38,44 @@ public class MenuOption : MonoBehaviour {
             foreach(Material mat in planetRenderer.materials)
                 mat.color = Color.Lerp(planetRenderer.sharedMaterial.color, unlocked ? Color.white : lockedPlanetColor, Time.deltaTime / 0.1f);
         }
+	}
+
+	public void BecomeUnhighlightedAction()
+	{
+		switch (actionType) {
+		case MenuOptionActionType.Level:
+			LevelPlanetRotator newPlanetRotator = GetComponent<LevelPlanetRotator> ();
+			if (newPlanetRotator)
+				newPlanetRotator.Deselect ();
+			break;
+		case MenuOptionActionType.Credits:
+			Credits credits = GetComponent<Credits> ();
+			if (credits) {
+				credits.selected = false;
+				credits.Reset ();
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	public void BecomeHighlightedAction()
+	{
+		switch (actionType) {
+		case MenuOptionActionType.Level:
+			LevelPlanetRotator newPlanetRotator = GetComponent<LevelPlanetRotator> ();
+			if (newPlanetRotator)
+				newPlanetRotator.Select ();
+			break;
+		case MenuOptionActionType.Credits:
+			Credits credits = GetComponent<Credits> ();
+			if (credits)
+				credits.selected = true;
+			break;
+		default:
+			break;
+		}
 	}
 
     public void PerformAction()

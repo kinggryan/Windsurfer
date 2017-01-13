@@ -65,9 +65,7 @@ public class LevelSelectRotator : MonoBehaviour {
     void RotateToObjectWithSign(int sign)
     {
         // Deselect old object
-        LevelPlanetRotator oldPlanetRotator = menuOptions[selectedMenuOption].GetComponent<LevelPlanetRotator>();
-        if (oldPlanetRotator)
-            oldPlanetRotator.Deselect();
+		menuOptions[selectedMenuOption].BecomeUnhighlightedAction();
 
         // Find the desired rotation delta
         selectedMenuOption = selectedMenuOption + sign*1;
@@ -85,8 +83,6 @@ public class LevelSelectRotator : MonoBehaviour {
         rotationValue = 0;
 
         // Select new object
-        LevelPlanetRotator newPlanetRotator = menuOptions[selectedMenuOption].GetComponent<LevelPlanetRotator>();
-        if (newPlanetRotator)
-            newPlanetRotator.Select();
+		menuOptions[selectedMenuOption].BecomeHighlightedAction();
     }
 }
