@@ -37,11 +37,11 @@ public class LevelSelectRotator : MonoBehaviour {
         }
         else
         {
-			if (Input.GetKeyDown("right") || MobileInput.GetSwipedRight())
+			if (Input.GetKeyDown("right") || MobileInput.GetSwipedLeft())
             {
                 RotateToNextObject();
             }
-			else if (Input.GetKeyDown("left") || MobileInput.GetSwipedLeft())
+			else if (Input.GetKeyDown("left") || MobileInput.GetSwipedRight())
             {
                 RotateToPreviousObject();
             }

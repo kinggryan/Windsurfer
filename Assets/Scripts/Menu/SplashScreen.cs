@@ -19,6 +19,7 @@ public class SplashScreen : MonoBehaviour {
 
 	void Start() {
 		fadeInOutImage = GetComponent<UnityEngine.UI.Image> ();
+		Input.simulateMouseWithTouches = false;
 	}
 
 	// Update is called once per frame
@@ -37,7 +38,7 @@ public class SplashScreen : MonoBehaviour {
 			Color originalColor = fadeInOutImage.color;
 			originalColor.a = 1 - fadeInOutCurve.Evaluate (fadeTime / fadeInDuration);
 			fadeInOutImage.color = originalColor;
-		} else if (fadeOutEnabled && Input.GetMouseButtonDown(0)) {
+		} else if (fadeOutEnabled && (Input.GetMouseButtonDown(0) || MobileInput.GetTouchUp())) {
 			fadingOut = true;
 			fadeTime = fadeOutDuration;
 		}
