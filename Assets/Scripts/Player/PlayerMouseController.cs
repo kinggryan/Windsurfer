@@ -90,25 +90,32 @@ public class PlayerMouseController : MonoBehaviour {
 		mobileInputMode = Input.touchSupported;
     }
 
+	void ReduceTimerIfDamaged()
+	{
+		// Cause rain loss if the rain meter 
+		if(rainMeterAmount < 1)
+		{
+			rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerSecond * Time.deltaTime);
+			rainlessDamageTimer -= Time.deltaTime;
+			if (rainlessDamageTimer <= 0)
+			{
+				Object.FindObjectOfType<PlayerDamageTaker>().RainRanOut();
+				rainlessDamageTimer = 0;
+				flickerer.PlayerDied();
+			}
+			trailEffectsManager.SetPlayerRainDamagePercent(1 - (rainlessDamageTimer / rainlessDamageTime));
+			ui.UpdateRainTimer (rainlessDamageTimer / rainlessDamageTime);
+		}
+		else
+		{
+			trailEffectsManager.SetPlayerRainDamagePercent(0);
+			ui.UpdateRainTimer (1);
+		}
+	}
+
 	// Update is called once per frame
 	void Update () {
-        // Cause rain loss if the rain meter 
-        if(rainMeterAmount < 1)
-        {
-            rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerSecond * Time.deltaTime);
-            rainlessDamageTimer -= Time.deltaTime;
-            if (rainlessDamageTimer <= 0)
-            {
-                Object.FindObjectOfType<PlayerDamageTaker>().RainRanOut();
-                rainlessDamageTimer = 0;
-                flickerer.PlayerDied();
-            }
-            trailEffectsManager.SetPlayerRainDamagePercent(1 - (rainlessDamageTimer / rainlessDamageTime));
-        }
-        else
-        {
-            trailEffectsManager.SetPlayerRainDamagePercent(0);
-        }
+		ReduceTimerIfDamaged ();
 
         // Update Effects while boosting
 		if(mobileInputMode ? MobileInput.GetTouchDown() : Input.GetButtonDown("Boost"))
