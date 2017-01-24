@@ -5,6 +5,7 @@ public class PlayerUI : MonoBehaviour {
 
     public UnityEngine.UI.Slider rainMeterSlider;
 	public UnityEngine.UI.Image rainTimerImage;
+	public Animator rainTimerAnimator;
     public float rainMeterSliderMaxDelta = 1.0f;
 
 	public GameObject hexFlickerPrefab;
@@ -31,8 +32,12 @@ public class PlayerUI : MonoBehaviour {
 
 	public void UpdateRainTimer(float timePercent)
 	{
+//		rainTimerAnimator.SetBool ("hurt", timePercent < 1.0);
+//		Debug.Log (timePercent < 1.0);
+		rainTimerAnimator.SetFloat("timerPercent",timePercent);
+
 		if (timePercent > previousRainTimerAmount) {
-			// TODO: Spawn effect that matches grounds filled effect
+			// Spawn effect that matches grounds filled effect
 			GameObject flickerObj = GameObject.Instantiate(hexFlickerPrefab,rainTimerImage.transform.position,rainTimerImage.transform.rotation);
 			flickerObj.transform.parent = rainTimerImage.transform.parent;
 		}
