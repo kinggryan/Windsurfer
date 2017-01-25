@@ -359,6 +359,9 @@ public class PlayerMouseController : MonoBehaviour {
         {
             flickerer.Heal();
         }
+
+		Debug.Log ("Increasing rainless damage timer...");
+		rainlessDamageTimer = Mathf.Min (rainlessDamageTime, rainlessDamageTimer + 0.34f * rainlessDamageTime);
     }
 
     public void TakeDamageAndLoseRain()
