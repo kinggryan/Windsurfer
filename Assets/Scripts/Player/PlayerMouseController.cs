@@ -33,17 +33,10 @@ public class PlayerMouseController : MonoBehaviour {
     public float rainFromBoostDistance = 15f;
     public float rainFromBoostSpreadDegrees = 30f;
     public float rainFromBoostAmount = 0.75f;
-    public float rainMeterGainPerForestGrowth = 0.1f;
-    public float rainMeterLossPerSecond = 0.25f;
-    // The following two properties are not currently used.
-    public float rainMeterLossPerSecondCharging = 0.2f;
-    public float rainMeterLossPerBoost = 0.33f;
     public float rainlessDamageTime = 4f;
 
     [Header("Game Object References")]
     public GameObject directionIndicator;
-    public GameObject cloudPoofPrefab;
-    public ParticleSystem cloudTrailParticleSystem;
 
 	[Header("Mobile Input")]
 	public bool mobileInputMode;
@@ -52,10 +45,6 @@ public class PlayerMouseController : MonoBehaviour {
     [Header("Mouse Input")]
     public bool mouseInputMode;
     public float minMouseDistanceFromPlayerToTurnScreenSpace = 160f;
-
-    [Header("Audio")]
-    public AudioSource cloudEnterSound;
-    public AudioSource cloudExitSound;
 
     // Private Properties
     private float speedCharge = 0f;
@@ -305,17 +294,6 @@ public class PlayerMouseController : MonoBehaviour {
             {
                 ground.RainedOnBurst(rainFromBoostAmount);
             }
-        }
-    }
-
-    void OnTriggerExit(Collider collider)
-    {
-        Cloud cloud = collider.GetComponent<Cloud>();
-        if (cloud)
-        {
-            GameObject.Instantiate(cloudPoofPrefab, transform.position, Quaternion.identity);
-            cloudTrailParticleSystem.Play();
-           // cloudExitSound.Play();
         }
     }
 
