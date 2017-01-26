@@ -10,7 +10,6 @@ public class PlayerMouseController : MonoBehaviour {
     [Header("Basic Movement Rates")]
     public float minSpeed = 30f;
     public float maxSpeed = 80f;
-    public float brakeRate = 20f;
     public float maxChargeTime = 0.6f;
     public float minChargeTime = 0.3f;
     public float maxBoostSpeed = 20f;
@@ -34,7 +33,6 @@ public class PlayerMouseController : MonoBehaviour {
     public float rainFromBoostDistance = 15f;
     public float rainFromBoostSpreadDegrees = 30f;
     public float rainFromBoostAmount = 0.75f;
-    public float rainMeterGainPerCloud = 0.25f;
     public float rainMeterGainPerForestGrowth = 0.1f;
     public float rainMeterLossPerSecond = 0.25f;
     // The following two properties are not currently used.
@@ -65,15 +63,9 @@ public class PlayerMouseController : MonoBehaviour {
     private PlayerTrailEffectsManager trailEffectsManager;
     private PlayerUI ui;
     private PlayerDamageFlicker flickerer;
-    private float rainMeterAmount = 1f;
+    private bool damaged = false;
     private float rainlessDamageTimer = 0f;
 	private Vector3 previousInputMovementDirection = Vector3.up;
-
-    // Public Methods
-    public void ChargeRainMeter(float amount)
-    {
-        rainMeterAmount = Mathf.Min(1, rainMeterAmount + amount);
-    }
 
     // Private Methods
     void Start()
@@ -93,9 +85,8 @@ public class PlayerMouseController : MonoBehaviour {
 	void ReduceTimerIfDamaged()
 	{
 		// Cause rain loss if the rain meter 
-		if(rainMeterAmount < 1)
+		if(damaged)
 		{
-			rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerSecond * Time.deltaTime);
 			rainlessDamageTimer -= Time.deltaTime;
 			if (rainlessDamageTimer <= 0)
 			{
@@ -177,7 +168,6 @@ public class PlayerMouseController : MonoBehaviour {
         }
 
         // Steer and brake
-      //  if(Input.GetButton("Boost"))
 		inputDirection.z = 0;
 		Steer( inputDirection, movementDirectionScreenSpace, mobileInputMode ? MobileInput.GetTouched() : Input.GetButton("Boost"));
 
@@ -222,8 +212,6 @@ public class PlayerMouseController : MonoBehaviour {
         // Update Visual Components
         trailEffectsManager.UpdateMovement(sphericalMovementVector, lookDirection,maxChargeDirectionAngle);
         trailEffectsManager.UpdateSpeed((sphericalMovementVector.magnitude - minSpeed) / (maxSpeed - minSpeed));
-        trailEffectsManager.UpdateRainMeter(rainMeterAmount);
-        ui.UpdateRainMeter(rainMeterAmount);
     }
 
     Vector3 GetWorldSpaceVectorFromInputVector(Vector3 inputVector)
@@ -269,18 +257,14 @@ public class PlayerMouseController : MonoBehaviour {
     /// <param name="rainRadius"></param>
     void RainFromCharge(float chargeRainDistance,float rainRadius)
     {
-     //   if (rainMeterAmount > 0)
+        // Scale rain based off of how sharply you are turning.
+        float rainMultiplier = Mathf.Abs(boostTurnAmount / maxChargeDirectionAngle);
+        foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, transform.position + -chargeRainDistance * directionIndicator.transform.forward, rainRadius, -transform.position.normalized, 0.5f * transform.position.magnitude))
         {
-            // Scale rain based off of how sharply you are turning.
-            float rainMultiplier = Mathf.Abs(boostTurnAmount / maxChargeDirectionAngle);
-           // rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerSecondCharging*Time.deltaTime);
-            foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, transform.position + -chargeRainDistance * directionIndicator.transform.forward, rainRadius, -transform.position.normalized, 0.5f * transform.position.magnitude))
+            Ground ground = hitInfo.collider.GetComponent<Ground>();
+            if (ground)
             {
-                Ground ground = hitInfo.collider.GetComponent<Ground>();
-                if (ground)
-                {
-                    ground.RainedOnAtPoint(hitInfo.point,rainMultiplier);
-                }
+                ground.RainedOnAtPoint(hitInfo.point,rainMultiplier);
             }
         }
     }
@@ -293,51 +277,34 @@ public class PlayerMouseController : MonoBehaviour {
     /// <param name="rainSpreadDegrees"></param>
     void RainFromBoost(float boostRainDistance,float rainRadius,float rainSpreadDegrees)
     {
-    //    if (rainMeterAmount > 0)
+        // Use a hash set to guarantee unique colliders
+        HashSet<Collider> hitGrounds = new HashSet<Collider>();
+
+        // Create the end points of our spread
+        List<Vector3> endPositions = new List<Vector3>();
+        for (float spreadAngle = -0.5f * rainSpreadDegrees; spreadAngle <= rainSpreadDegrees; spreadAngle += 10f)
         {
-            // Drain rain meter
-          //  rainMeterAmount = Mathf.Max(0, rainMeterAmount - rainMeterLossPerBoost);
+            Vector3 endPosition = transform.position - boostRainDistance * (Quaternion.AngleAxis(spreadAngle, transform.position.normalized) * directionIndicator.transform.forward);
+            endPositions.Add(endPosition);
+        }
 
-            // Use a hash set to guarantee unique colliders
-            HashSet<Collider> hitGrounds = new HashSet<Collider>();
-
-            // Create the end points of our spread
-            List<Vector3> endPositions = new List<Vector3>();
-            for (float spreadAngle = -0.5f * rainSpreadDegrees; spreadAngle <= rainSpreadDegrees; spreadAngle += 10f)
+        // Do all the capsule casts
+        foreach (Vector3 endPosition in endPositions)
+        {
+            foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, endPosition, rainRadius, -transform.position.normalized, 0.5f * transform.position.magnitude))
             {
-                Vector3 endPosition = transform.position - boostRainDistance * (Quaternion.AngleAxis(spreadAngle, transform.position.normalized) * directionIndicator.transform.forward);
-                endPositions.Add(endPosition);
-            }
-
-            // Do all the capsule casts
-            foreach (Vector3 endPosition in endPositions)
-            {
-                foreach (RaycastHit hitInfo in Physics.CapsuleCastAll(transform.position, endPosition, rainRadius, -transform.position.normalized, 0.5f * transform.position.magnitude))
-                {
-                    hitGrounds.Add(hitInfo.collider);
-                }
-            }
-
-            // Rain on the colliders
-            foreach (Collider col in hitGrounds)
-            {
-                Ground ground = col.GetComponent<Ground>();
-                if (ground)
-                {
-                    ground.RainedOnBurst(rainFromBoostAmount);
-                }
+                hitGrounds.Add(hitInfo.collider);
             }
         }
-    }
 
-    void OnTriggerEnter(Collider collider)
-    {
-        Cloud cloud = collider.GetComponent<Cloud>();
-        if (cloud && cloud.HitPlayer())
+        // Rain on the colliders
+        foreach (Collider col in hitGrounds)
         {
-            rainMeterAmount = Mathf.Min(1, rainMeterAmount + rainMeterGainPerCloud);
-            GameObject.Instantiate(cloudPoofPrefab, transform.position, Quaternion.identity);
-            cloudEnterSound.Play();
+            Ground ground = col.GetComponent<Ground>();
+            if (ground)
+            {
+                ground.RainedOnBurst(rainFromBoostAmount);
+            }
         }
     }
 
@@ -354,25 +321,24 @@ public class PlayerMouseController : MonoBehaviour {
 
     public void ForestCreated()
     {
-        rainMeterAmount = Mathf.Min(1f, rainMeterAmount + rainMeterGainPerForestGrowth);
-        if(rainMeterAmount >= 1)
-        {
-            flickerer.Heal();
-        }
-
 		Debug.Log ("Increasing rainless damage timer...");
 		rainlessDamageTimer = Mathf.Min (rainlessDamageTime, rainlessDamageTimer + 0.34f * rainlessDamageTime);
+		if (rainlessDamageTimer >= rainlessDamageTime) {
+			damaged = false;
+			flickerer.Heal ();
+		}
     }
 
     public void TakeDamageAndLoseRain()
     {
-        if (rainMeterAmount > 0)
+        if (!damaged)
         {
-            rainMeterAmount = 0;
+			damaged = true;
             rainlessDamageTimer = rainlessDamageTime;
         }
         else
         {
+			// Die
             Object.FindObjectOfType<PlayerDamageTaker>().RainRanOut();
         }
     }
