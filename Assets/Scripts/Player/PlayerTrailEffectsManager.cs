@@ -55,7 +55,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public float rainOverWaterAudioMaxVolume = 0.5f;
 
     private TrailRenderer trailRenderer;
-    private float rainMeter;
+    private float rainMeter = 1.0f;
     private bool charging = false;
     private float chargeRainMultiplier;
 
