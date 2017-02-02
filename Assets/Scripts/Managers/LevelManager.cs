@@ -8,12 +8,13 @@ public class LevelManager : MonoBehaviour {
     {
 		LevelUnlockManager.SharedInstance ().LevelCompleted (SceneManager.GetActiveScene ().name);
         Object.FindObjectOfType<PlayerCameraController>().LevelComplete(EndLevelAnimationComplete);
-        Object.FindObjectOfType<ScreenFlash>().LevelCompleteFadeOut();
+		if(!(LevelUnlockManager.SharedInstance().IsGameComplete() && LevelUnlockManager.SharedInstance().GetLevelSceneNameAfter(SceneManager.GetActiveScene().name) == null)) 
+			Object.FindObjectOfType<ScreenFlash>().LevelCompleteFadeOut();
     }
 
     public void EndLevelAnimationComplete()
     {
-		if(LevelUnlockManager.SharedInstance().IsGameComplete())
+		if(LevelUnlockManager.SharedInstance().IsGameComplete() && LevelUnlockManager.SharedInstance().GetLevelSceneNameAfter(SceneManager.GetActiveScene().name) == null)
         {
             Object.FindObjectOfType<UIController>().GameComplete();
         }

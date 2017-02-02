@@ -33,23 +33,12 @@ public class LevelUnlockManager {
 			// TODO: Use some sort of xml or other type of format to init this data. Shouldn't have to do it in source.
 			allLevelInfo = new LevelInfo[8];
 
-			for (int i = 0; i < 6; i++) {
+			for (int i = 0; i < 8; i++) {
 				allLevelInfo [i].name = "World " + (i+1);
 				allLevelInfo [i].sceneName = "Level1-" + (i+1);
 				allLevelInfo [i].unlocked = false;
 				allLevelInfo [i].completed = false;
 			}
-
-			// 7 and 8 have been switched. Again, look at the above TODO
-			allLevelInfo [6].name = "World " + (7);
-			allLevelInfo [6].sceneName = "Level1-" + (8);
-			allLevelInfo [6].unlocked = false;
-			allLevelInfo [6].completed = false;
-
-			allLevelInfo [7].name = "World " + (8);
-			allLevelInfo [7].sceneName = "Level1-" + (7);
-			allLevelInfo [7].unlocked = false;
-			allLevelInfo [7].completed = false;
 
 			allLevelInfo [0].unlocked = true;
 		}
