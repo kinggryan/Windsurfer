@@ -17,6 +17,7 @@ public class PlayerDamageTaker : MonoBehaviour {
     private PlayerMouseController controller;
     private PlayerDamageFlicker flickerer;
     private bool invincible = false;
+	private bool gameComplete;
 
 	// Use this for initialization
 	void Start () {
@@ -40,6 +41,9 @@ public class PlayerDamageTaker : MonoBehaviour {
 
     public void TakeDamage(Vector3 damageOrigin)
     {
+		if (gameComplete)
+			return;
+
         //   health.TakeDamage(damageTakenOnHit);
         controller.TakeDamageAndLoseRain();
         flickerer.TakeDamage();
@@ -63,4 +67,9 @@ public class PlayerDamageTaker : MonoBehaviour {
         yield return new WaitForSeconds(time);
         invincible = false;
     }
+
+	public void GameComplete()
+	{
+		gameComplete = true;
+	}
 }
