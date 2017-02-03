@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class UIController : MonoBehaviour {
 
@@ -9,6 +10,9 @@ public class UIController : MonoBehaviour {
     public GameObject nextLevelButton;
     public GameObject quitButton;
 
+	private bool gameComplete = false;
+	private float gameCompleteTimer = 0;
+
     // Use this for initialization
     void Start () {
 	
@@ -16,7 +20,12 @@ public class UIController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		if (gameComplete) {
+			gameCompleteTimer += Time.deltaTime;
+
+			if(gameCompleteTimer >= 3f && (MobileInput.GetTouchDown() || Input.GetButtonDown ("Boost")))
+				SceneManager.LoadScene ("Menu");
+		}
 	}
 
     public void NextLevel()
@@ -34,6 +43,8 @@ public class UIController : MonoBehaviour {
 //        victoryText.enabled = true;
 		foreach (UnityEngine.UI.Text vtext in victoryText)
 			vtext.enabled = true;
+
+		gameComplete = true;
     }
 
     public void Quit()
