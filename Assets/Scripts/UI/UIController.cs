@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class UIController : MonoBehaviour {
 
-    public UnityEngine.UI.Text victoryText;
+	public UnityEngine.UI.Text[] victoryText;
 
     public GameObject nextLevelButton;
     public GameObject quitButton;
@@ -30,8 +30,10 @@ public class UIController : MonoBehaviour {
 
     public void GameComplete()
     {
-        victoryText.text = "You Win!";
-        victoryText.enabled = true;
+//        victoryText.text = "You Win!";
+//        victoryText.enabled = true;
+		foreach (UnityEngine.UI.Text vtext in victoryText)
+			vtext.enabled = true;
     }
 
     public void Quit()
@@ -43,7 +45,8 @@ public class UIController : MonoBehaviour {
     {
         LevelDifficultyManager.LevelComplete();
 
-        victoryText.enabled = true;
+		foreach (UnityEngine.UI.Text vtext in victoryText)
+			vtext.enabled = true;
 
         GameObject[] buttonsToEnableOnVictory = { quitButton };
         if(!LevelDifficultyManager.GameComplete())
@@ -52,7 +55,7 @@ public class UIController : MonoBehaviour {
         }
         else
         {
-            victoryText.text = "You won the game!";
+//            victoryText.text = "You won the game!";
         }
 
         foreach (GameObject obj in buttonsToEnableOnVictory)
