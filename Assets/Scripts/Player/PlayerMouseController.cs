@@ -34,6 +34,7 @@ public class PlayerMouseController : MonoBehaviour {
     public float rainFromBoostSpreadDegrees = 30f;
     public float rainFromBoostAmount = 0.75f;
     public float rainlessDamageTime = 4f;
+	public float damageAmount = 0.3f;
 
     [Header("Game Object References")]
     public GameObject directionIndicator;
@@ -316,8 +317,11 @@ public class PlayerMouseController : MonoBehaviour {
         }
         else
         {
-			// Die
-            Object.FindObjectOfType<PlayerDamageTaker>().RainRanOut();
+			rainlessDamageTimer -= damageAmount*rainlessDamageTime;
+			if (rainlessDamageTimer <= 0) {
+				// Die
+				Object.FindObjectOfType<PlayerDamageTaker> ().RainRanOut ();
+			}
         }
     }
 }

@@ -51,12 +51,14 @@ public class PlayerCameraController : MonoBehaviour {
                     // Go to next level
                     endLevelAnimationCompletionHandler();
                 }
-                else
-                {
+//                else
+//                {
                     transform.localPosition = startingLocalPosition + -1 * Vector3.forward * endLevelCameraZoomCurve.Evaluate(animationTime);
-                }
+//                }
                 break;
         }
+
+		Debug.Log ("State " + state + " lp " + transform.localPosition);
 	}
 
     public void LevelComplete(LevelCompleteDelegate completionHandler)
@@ -64,6 +66,7 @@ public class PlayerCameraController : MonoBehaviour {
         state = CameraState.EndingLevel;
         animationTime = 0;
         endLevelAnimationCompletionHandler = completionHandler;
+		GetComponent<CameraShaker> ().StopShaking ();
         GetComponent<CameraShaker>().enabled = false;
     }
 }

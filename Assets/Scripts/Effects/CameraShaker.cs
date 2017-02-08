@@ -41,7 +41,7 @@ public class CameraShaker : MonoBehaviour
         }
     }
 
-    void StopShaking()
+    public void StopShaking()
     {
         transform.localPosition = originalPosition;
         shaking = false;
@@ -49,7 +49,7 @@ public class CameraShaker : MonoBehaviour
 
     public void ShakeInDirectionWithIntensity(Vector3 direction, float intensity, ShakeType type = ShakeType.Default)
     {
-        if (shaking && type == shakeType && type == ShakeType.Rumble)
+		if (!enabled || (shaking && type == shakeType && type == ShakeType.Rumble))
             return;
 
         shaking = true;
