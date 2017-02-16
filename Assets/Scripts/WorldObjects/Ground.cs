@@ -68,7 +68,7 @@ public class Ground : MonoBehaviour {
             }
             else
             {
-                renderer.material.SetFloat("_ForestAmount", rainAmount);
+                renderer.material.SetFloat("_ForestAmount", rainAmount*0.7f);
             }
         }
     }
