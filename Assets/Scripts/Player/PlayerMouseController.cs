@@ -11,7 +11,6 @@ public class PlayerMouseController : MonoBehaviour {
     public float minSpeed = 30f;
     public float maxSpeed = 80f;
     public float maxChargeTime = 0.6f;
-    public float minChargeTime = 0.3f;
     public float maxBoostSpeed = 20f;
     public float minBoostSpeed = 20f;
     public float minGlideSpeed = 15f;
