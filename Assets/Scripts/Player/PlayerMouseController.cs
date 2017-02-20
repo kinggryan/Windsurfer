@@ -309,7 +309,7 @@ public class PlayerMouseController : MonoBehaviour {
 
     public void TakeDamageAndLoseRain()
     {
-        if (!damaged)
+		if (!damaged)
         {
 			damaged = true;
             rainlessDamageTimer = rainlessDamageTime;
@@ -323,4 +323,9 @@ public class PlayerMouseController : MonoBehaviour {
 			}
         }
     }
+
+	public void Bounce() {
+		// Test
+		sphericalMovementVector *= -1;
+	}
 }

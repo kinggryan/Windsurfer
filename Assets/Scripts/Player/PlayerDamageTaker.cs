@@ -31,6 +31,9 @@ public class PlayerDamageTaker : MonoBehaviour {
         if (collider.GetComponent<PlayerObstacle>() && !invincible)
         {
             TakeDamage(collider.transform.position);
+			if (collider.GetComponent<PlayerObstacle> ().bouncesPlayer) {
+				controller.Bounce ();
+			}
         }
     }
 
