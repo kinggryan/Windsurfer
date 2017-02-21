@@ -28,9 +28,13 @@ public class PlayerDamageTaker : MonoBehaviour {
 	
 	void OnTriggerEnter(Collider collider)
     {
-        if (collider.GetComponent<PlayerObstacle>() && !invincible)
+        if (collider.GetComponent<PlayerObstacle>())
         {
-            TakeDamage(collider.transform.position);
+			// Take damage if not invincible
+			if(!invincible)
+	            TakeDamage(collider.transform.position);
+
+			// Always bounce, even if it doesn't lead to damage, so we don't pass through mountains
 			if (collider.GetComponent<PlayerObstacle> ().bouncesPlayer) {
 				controller.Bounce ();
 			}
