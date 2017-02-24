@@ -14,9 +14,20 @@ public class ParticleEffectRateScaler : MonoBehaviour {
 		system = GetComponent<ParticleSystem> ();
 		emission = system.emission;
 		multiplierScalar = emission.rateOverTimeMultiplier;
+		StartCoroutine(StartPlayingInSeconds(1.5f));
+//		emission.rateOverTimeMultiplier = 0;
+//		system.Play ();
 	}
 
 	public void SetEmissionRateMultiplier(float multiplier) {
+//		if (!system.isPlaying)
+//			system.Play ();
 		emission.rateOverTimeMultiplier = multiplierScalar*multiplier;
+	}
+
+	IEnumerator StartPlayingInSeconds(float seconds) {
+		yield return new WaitForSeconds (seconds);
+
+		system.Play ();
 	}
 }

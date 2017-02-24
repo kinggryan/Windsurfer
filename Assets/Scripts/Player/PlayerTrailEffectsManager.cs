@@ -189,7 +189,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
         previousTurnRate = turnRate;
 
 		foreach (ParticleEffectRateScaler scaler in scalersForTurning) {
-			Debug.Log (visibleTurnRate + " " + playerMaxTurnRate);
+//			Debug.Log (visibleTurnRate + " " + playerMaxTurnRate);
 			scaler.SetEmissionRateMultiplier (visibleTurnRate / playerMaxTurnRate);
 		}
    /*     float sign = Vector3.Angle(Vector3.Cross(playerSphericalMotionVector, transform.position), playerLookDirection) <= 90 ? -1 : 1;
