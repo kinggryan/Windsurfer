@@ -172,15 +172,15 @@ public class PlayerMouseController : MonoBehaviour {
         // Boost
 		if(mobileInputMode ? MobileInput.GetTouchUp() : Input.GetButtonUp("Boost"))
         {
+			// If we've been charging long enough
             if (speedCharge >= maxChargeTime)
             {
                 Quaternion boostDirectionTurn = Quaternion.AngleAxis(boostTurnAmount, transform.position);
 
                 sphericalMovementVector = (Mathf.Min(1f, speedCharge / maxChargeTime) * (maxBoostSpeed - minBoostSpeed) + minBoostSpeed) * (boostDirectionTurn * sphericalMovementVector.normalized);
-                boostTurnAmount = 0;
                 if (sphericalMovementVector.magnitude > maxSpeed)
                 {
-                    sphericalMovementVector = sphericalMovementVector.normalized * maxSpeed;
+					sphericalMovementVector = sphericalMovementVector.normalized * maxSpeed;
                 }
 
                 // Shake camera
@@ -188,10 +188,14 @@ public class PlayerMouseController : MonoBehaviour {
                 shakeDirection.z = 0;
                 shakeDirection.Normalize();
                 Camera.main.GetComponent<CameraShaker>().ShakeInDirectionWithIntensity(shakeDirection, boostCameraShakeIntensity, CameraShaker.ShakeType.Smooth);
-            }
+            	
+				trailEffectsManager.Boost ();
+				RainFromBoost(rainFromBoostDistance, playerRainRadius, rainFromBoostSpreadDegrees);
+			}
+
+			boostTurnAmount = 0;
             speedCharge = 0f;
             trailEffectsManager.StopCharging();
-            RainFromBoost(rainFromBoostDistance, playerRainRadius, rainFromBoostSpreadDegrees);
         }
 
         // Look

@@ -135,7 +135,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
             startChargingAudio.Play();
         //    chargingBoostParticleSystem.Play();
         }
-        playerDriftingColorChangeTime = playerDriftingGradientDuration;
+//        playerDriftingColorChangeTime = playerDriftingGradientDuration;
     }
 
     public void StopCharging()
@@ -144,12 +144,17 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 //        chargeRainParticleSystem.Stop();
         if (rainMeter > 0)
         {
-            boostRainParticleSystem.Play();
-            boostAudio.Play();
+//            boostRainParticleSystem.Play();
+//            boostAudio.Play();
         }
 
     //    chargingBoostParticleSystem.Stop();
     }
+
+	public void Boost() {
+		boostRainParticleSystem.Play();
+		boostAudio.Play();
+	}
 
     public void StartBraking()
     {
@@ -244,6 +249,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 
     public void BoostReady()
     {
+		playerDriftingColorChangeTime = playerDriftingGradientDuration;
         StartCoroutine(FlickerBoostColor(boostFlickerDuration));
     //    Debug.Log("Boost ready" + Time.time);
     }
