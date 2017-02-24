@@ -58,7 +58,7 @@ public class PlayerCameraController : MonoBehaviour {
                 break;
         }
 
-		Debug.Log ("State " + state + " lp " + transform.localPosition);
+//		Debug.Log ("State " + state + " lp " + transform.localPosition);
 	}
 
     public void LevelComplete(LevelCompleteDelegate completionHandler)

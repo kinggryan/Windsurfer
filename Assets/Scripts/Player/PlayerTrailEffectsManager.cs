@@ -46,6 +46,8 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
     public ParticleSystem boostRainParticleSystem;
     public ParticleSystem chargingBoostParticleSystem;
 
+	public ParticleEffectRateScaler[] scalersForTurning;
+
     [Header("Audio")]
     public AudioSource rainOverWaterAudio;
     public AudioSource boostAudio;
@@ -129,7 +131,7 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
         charging = true; 
         if (rainMeter > 0)
         {
-            chargeRainParticleSystem.Play();
+//            chargeRainParticleSystem.Play();
             startChargingAudio.Play();
         //    chargingBoostParticleSystem.Play();
         }
@@ -138,8 +140,8 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 
     public void StopCharging()
     {
-        charging = false;
-        chargeRainParticleSystem.Stop();
+		charging = false;
+//        chargeRainParticleSystem.Stop();
         if (rainMeter > 0)
         {
             boostRainParticleSystem.Play();
@@ -180,6 +182,11 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 
         previousSphericalMovementVector = playerSphericalMotionVector;
         previousTurnRate = turnRate;
+
+		foreach (ParticleEffectRateScaler scaler in scalersForTurning) {
+			Debug.Log (visibleTurnRate + " " + playerMaxTurnRate);
+			scaler.SetEmissionRateMultiplier (visibleTurnRate / playerMaxTurnRate);
+		}
    /*     float sign = Vector3.Angle(Vector3.Cross(playerSphericalMotionVector, transform.position), playerLookDirection) <= 90 ? -1 : 1;
         ParticleSystem.VelocityOverLifetimeModule vm = chargeRainParticleSystem.velocityOverLifetime;
         float min = Mathf.Min(sign * Vector3.Angle(playerSphericalMotionVector, playerLookDirection),0);
@@ -196,6 +203,8 @@ public class PlayerTrailEffectsManager : MonoBehaviour {
 
     public void UpdateRainMeter(float rainMeter)
     {
+		return;
+
         this.rainMeter = rainMeter;
 
         ParticleSystem.EmissionModule emission = rainParticleSystem.emission;
