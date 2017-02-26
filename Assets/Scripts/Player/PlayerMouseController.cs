@@ -141,10 +141,15 @@ public class PlayerMouseController : MonoBehaviour {
 		}
         else if (mouseInputMode)
         {
-            Vector3 positionScreenSpace = Camera.main.WorldToScreenPoint(transform.position);
-            movementDirectionScreenSpace.z = 0;
-            inputDirection = (positionScreenSpace - Input.mousePosition) / minMouseDistanceFromPlayerToTurnScreenSpace;
-            inputDirection *= -1;
+			if (Input.GetButton ("Boost")) {
+				Vector3 positionScreenSpace = Camera.main.WorldToScreenPoint (transform.position);
+				movementDirectionScreenSpace.z = 0;
+				inputDirection = (positionScreenSpace - Input.mousePosition) / minMouseDistanceFromPlayerToTurnScreenSpace;
+				inputDirection *= -1;
+				previousInputMovementDirection = inputDirection;
+			} else {
+				inputDirection = previousInputMovementDirection;	
+			}
         }
         else
         {
@@ -228,6 +233,8 @@ public class PlayerMouseController : MonoBehaviour {
     /// <param name="chargingBoost"></param>
     void Steer(Vector3 inputDirection, Vector3 playerScreenMovementDirection, bool chargingBoost)
     {
+		
+
         boostTurnAmount = boostTurnAmount % 360;
         boostTurnAmount = Mathf.Clamp(boostTurnAmount,-maxChargeDirectionAngle, maxChargeDirectionAngle);
 
@@ -324,6 +331,7 @@ public class PlayerMouseController : MonoBehaviour {
 			if (rainlessDamageTimer <= 0) {
 				// Die
 				Object.FindObjectOfType<PlayerDamageTaker> ().RainRanOut ();
+				ui.UpdateRainTimer (0);
 			}
         }
     }
