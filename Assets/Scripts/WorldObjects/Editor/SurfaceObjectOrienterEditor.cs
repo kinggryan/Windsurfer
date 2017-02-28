@@ -33,7 +33,11 @@ public class SurfaceObjectOrienterEditor : Editor
         orienter.groundDistance = orienter.transform.position.magnitude;
         Handles.DrawLine(Vector3.zero, orienter.transform.position);
 
-        orienter.transform.rotation = Handles.Disc(orienter.transform.rotation, orienter.transform.position, orienter.transform.position.normalized, 25f, true, 1f);
+		Quaternion axisRotation = Handles.Disc(orienter.transform.rotation, orienter.transform.position, orienter.transform.position.normalized, 25f, true, 1f);
+		if(axisRotation != orienter.transform.rotation) {
+			Undo.RecordObject (orienter.transform, "Orienter Rotation");
+			orienter.transform.rotation = axisRotation;
+		}
 
         // Draw the spherical position handles
         Quaternion zPositionQuaternion = Handles.Disc(orienter.transform.rotation, Vector3.zero, orienter.transform.forward, orienter.groundDistance + 10f, true, 1f);
